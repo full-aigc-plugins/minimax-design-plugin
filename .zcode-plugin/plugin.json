@@ -5,7 +5,7 @@
     "en": "MiniMax Design",
     "zh-CN": "MiniMax 设计"
   },
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Generate MiniMax H3 videos with environment-variable auth, first/last-frame FL2VA anchoring, resumable v2 queries, and 11 vendored skills (mmx toolkit, music, and 8 mmx-cli-adapted H3 style generators).",
   "description_i18n": {
     "en": "MiniMax Hailuo video generation with environment-variable authentication, white-model first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
@@ -26,5 +26,31 @@
     "previs"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "hooks": "./hooks/hooks.json",
+  "commands": "./commands",
+  "agents": "./agents",
+  "userConfig": [
+    {
+      "key": "MINIMAX_API_KEY",
+      "type": "string",
+      "title": "MiniMax API Key",
+      "description": "platform.minimax.cn（国内）或 platform.minimax.io（国际）→ 用户中心 → 接口密钥",
+      "required": true,
+      "sensitive": true
+    },
+    {
+      "key": "MINIMAX_API_HOST",
+      "type": "string",
+      "title": "API Host",
+      "description": "https://api.minimax.cn（国内默认）/ https://api.minimax.io（国际）",
+      "default": "https://api.minimax.cn"
+    },
+    {
+      "key": "MINIMAX_MODEL",
+      "type": "string",
+      "title": "默认模型",
+      "description": "MiniMax-H3 或 MiniMax-H3-Max",
+      "default": "MiniMax-H3"
+    }
+  ]
 }

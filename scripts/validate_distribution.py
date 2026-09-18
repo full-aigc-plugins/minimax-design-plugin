@@ -89,6 +89,31 @@ def main() -> int:
     if res.returncode != 0:
         fail(f"vendor digests mismatch: {res.stdout + res.stderr}")
 
+    for cmd in sorted((ROOT / "commands").glob("*.md")):
+        text = cmd.read_text(encoding="utf-8")
+        if not text.startswith("---"):
+            fail(f"commands/{cmd.name}: missing frontmatter")
+        m = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+        if not m:
+            fail(f"commands/{cmd.name}: malformed frontmatter")
+        if "description" not in m.group(1):
+            fail(f"commands/{cmd.name}: missing description")
+
+    for agent in sorted((ROOT / "agents").glob("*.md")):
+        text = agent.read_text(encoding="utf-8")
+        m = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+        if not m:
+            fail(f"agents/{agent.name}: missing frontmatter")
+        block = m.group(1)
+        for key in ("name", "description"):
+            if not re.search(rf"^{key}:", block, re.MULTILINE):
+                fail(f"agents/{agent.name}: missing {key}")
+
+    zc = load_json(".zcode-plugin/plugin.json")
+    uc = zc.get("userConfig", [])
+    if not any(u.get("key") == "MINIMAX_API_KEY" and u.get("sensitive") for u in uc):
+        fail("zcode userConfig must declare MINIMAX_API_KEY as sensitive")
+
     hooks = load_json("hooks/hooks.json")
     for event in ("SessionStart", "UserPromptSubmit"):
         if event not in hooks.get("hooks", {}):
