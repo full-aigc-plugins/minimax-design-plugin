@@ -4,18 +4,34 @@
     {
       "package": "minimax-skills",
       "repo": "https://github.com/full-aigc-skills/minimax-skills.git",
-      "ref": "main",
-      "sha": "0b72343a8d5674aa430d42ba8c72d575cadbba8a",
+      "ref": "v1.1.0",
+      "sha": "0c48948649e76d79b1dad141175d117ce8010e52",
       "dest": "skills/",
       "skills": [
         "minimax-multimodal-toolkit",
         "minimax-music-gen",
-        "minimax-music-playlist"
+        "minimax-music-playlist",
+        "3d-animation-short-generator",
+        "brand-promo-video-generator",
+        "co-op-game-intro-generator",
+        "handdrawn-live-video-generator",
+        "minimalist-product-ad-generator",
+        "music-video-subtitle-generator",
+        "paper-collage-explainer-generator",
+        "papercraft-stop-motion-explainer"
       ],
       "sha256": {
         "minimax-multimodal-toolkit": "ff7dc347288faacca73d1ea31f7dee42d5707bccce63346fa473e0776a0b8494",
         "minimax-music-gen": "f4a9f10ee1fccc53d1127109ea7191c1efa5eaa66eecc50b5a4c6335ba3604ab",
-        "minimax-music-playlist": "1f0b3f1925d6c014490770d191611fddba9b36de13bdc7a7944d3fdb0b29032a"
+        "minimax-music-playlist": "1f0b3f1925d6c014490770d191611fddba9b36de13bdc7a7944d3fdb0b29032a",
+        "3d-animation-short-generator": "a21d2b79a8e9c3690b869ac47ba25056a8c1583431437e1d886a67954e559acb",
+        "brand-promo-video-generator": "78ae418b5d43bf79e8aab40528155b7b8f8fdc6b3aebd4cbddc435c028ddd990",
+        "co-op-game-intro-generator": "fd46bb5c3aab5009a24489f9a2a592247f98306c403d3b56ad70235ee7ae9557",
+        "handdrawn-live-video-generator": "d061439f976238ce0c2dd354178e7617c1633f0015e20f6fc949ee52157bec77",
+        "minimalist-product-ad-generator": "9b750712b662502b68cdbb309a4d690943a60f3d766d9d9f59b5e7c068e16a9b",
+        "music-video-subtitle-generator": "33b3bf24e7e682add660493d7d736d9a7be3ead4f1ef006b58f7c51d789edf79",
+        "paper-collage-explainer-generator": "94b6cc6902be8cf38148cb8a4a6773efd5a5ecbd8c7ee82304c9a0ed0e0abff1",
+        "papercraft-stop-motion-explainer": "fba8163f4d93600eeb9eb5ad8d495f655a3d0947972e7161d2de374175d52ffc"
       }
     },
     {

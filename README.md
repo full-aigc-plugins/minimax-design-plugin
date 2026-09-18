@@ -32,7 +32,7 @@ The `minimax-design-use` skill routes the request and surfaces actionable guidan
 - Prompts are drafted through the vendored **`h3-prompt-writing`** skill
   (T2VA / I2VA / FL2VA / L2VA / Ref2VA structures from MiniMax-AI/MiniMax-H3).
 - Async with resumable queries: a polling timeout prints the `task_id`; resume with `query --task-id` — never resubmit a paid task.
-- Vendored skills (verbatim from [full-aigc-skills/minimax-skills](https://github.com/full-aigc-skills/minimax-skills), pinned by content digests): `minimax-multimodal-toolkit`, `minimax-music-gen`, `minimax-music-playlist`.
+- Vendored skills (verbatim, content-pinned by SHA-256): the mmx toolkit + music skills from [full-aigc-skills/minimax-skills](https://github.com/full-aigc-skills/minimax-skills) v1.1.0, **plus the 8 style-generator skills adapted from MiniMax-AI/MiniMax-H3 to mmx-cli execution** (brand promo, 3D animation short, MV subtitles, papercraft stop motion, paper collage, minimalist product ad, handdrawn live, co-op game intro).
 
 ## Fixed-format account pipeline
 

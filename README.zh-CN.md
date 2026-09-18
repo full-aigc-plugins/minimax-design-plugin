@@ -40,10 +40,11 @@
   Ref2VA 结构，来自 MiniMax-AI/MiniMax-H3）。
 - 异步任务 + 断点续查：轮询超时会打印 `task_id`，用 `query --task-id` 续查——
   **付费任务永不重复提交**。
-- 内置技能（逐字 vendor 自
-  [full-aigc-skills/minimax-skills](https://github.com/full-aigc-skills/minimax-skills)，
-  内容按 SHA-256 固定）：`minimax-multimodal-toolkit`、`minimax-music-gen`、
-  `minimax-music-playlist`。
+- 内置技能（逐字 vendor，SHA-256 内容固定）：
+  [full-aigc-skills/minimax-skills](https://github.com/full-aigc-skills/minimax-skills)
+  v1.1.0 的 mmx 工具箱与音乐技能，**以及 8 个自 MiniMax-AI/MiniMax-H3 改编为
+  mmx-cli 执行的风格生成器**（品牌宣传、3D 动画短片、MV 字幕、定格剪纸、
+  纸拼贴、极简产品广告、手绘实拍、双人游戏开场）。
 
 ## 固定模式起号流水线
 

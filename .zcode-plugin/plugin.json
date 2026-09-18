@@ -5,11 +5,11 @@
     "en": "MiniMax Design",
     "zh-CN": "MiniMax 设计"
   },
-  "version": "0.2.1",
-  "description": "Generate MiniMax H3 videos with environment-variable auth, first/last-frame FL2VA anchoring, resumable v2 queries, and vendored h3-prompt-writing + mmx toolkit skills.",
+  "version": "0.3.0",
+  "description": "Generate MiniMax H3 videos with environment-variable auth, first/last-frame FL2VA anchoring, resumable v2 queries, and 11 vendored skills (mmx toolkit, music, and 8 mmx-cli-adapted H3 style generators).",
   "description_i18n": {
     "en": "MiniMax Hailuo video generation with environment-variable authentication, white-model first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
-    "zh-CN": "MiniMax H3 视频生成：环境变量鉴权、白模首尾帧 FL2VA 锚定、断点续查，内置 h3-prompt-writing 与 mmx 工具箱技能。"
+    "zh-CN": "MiniMax H3 视频生成：环境变量鉴权、白模首尾帧 FL2VA 锚定、断点续查，内置 11 个技能（mmx 工具箱、音乐、8 个 mmx-cli 化 H3 风格生成器）。"
   },
   "author": {
     "name": "Full Stack Skills / PartMe.AI",
