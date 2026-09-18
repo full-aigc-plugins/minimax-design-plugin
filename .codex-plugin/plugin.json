@@ -19,7 +19,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "MiniMax Design",
-    "shortDescription": "Generate videos with MiniMax Hailuo",
+    "shortDescription": "Generate H3 videos with MiniMax (first/last-frame anchoring)",
     "longDescription": "Generate MiniMax Hailuo videos through a deterministic client with environment-variable authentication, first/last-frame composition anchored by white-model previs frames, resumable async queries, and verbatim vendored mmx toolkit skills for text, image, speech, and music generation.",
     "developerName": "Full Stack Skills / PartMe.AI",
     "category": "Creativity",
