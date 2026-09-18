@@ -17,6 +17,19 @@
         "minimax-music-gen": "f4a9f10ee1fccc53d1127109ea7191c1efa5eaa66eecc50b5a4c6335ba3604ab",
         "minimax-music-playlist": "1f0b3f1925d6c014490770d191611fddba9b36de13bdc7a7944d3fdb0b29032a"
       }
+    },
+    {
+      "package": "minimax-h3-skills",
+      "repo": "https://github.com/MiniMax-AI/MiniMax-H3.git",
+      "ref": "main",
+      "dest": "skills/",
+      "skills": [
+        "h3-prompt-writing"
+      ],
+      "sha": "d21241f0a4b3acbb34c97dae47fa417b7065e438",
+      "sha256": {
+        "h3-prompt-writing": "1704052843444669a36a82a18a9bdb55a28b2d3319c8f1f9195172e0e9658f8b"
+      }
     }
   ]
 }

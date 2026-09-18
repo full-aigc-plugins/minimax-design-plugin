@@ -1,68 +1,87 @@
 ---
 name: minimax-video-generation
-description: "Generate videos with MiniMax Hailuo through scripts/minimax_video.py: text2video, image2video with first_frame_image, and first/last-frame composition anchored by a Blender white-model previs. Deterministic client, resumable query, verified download."
+description: "Generate videos with MiniMax H3 via the v2 API: t2v, i2v, first/last-frame FL2VA anchored by white-model previs frames, and reference-image mode. Deterministic client, resumable queries, verified download. Prompts are drafted through the vendored h3-prompt-writing skill."
 ---
 
-# MiniMax Video Generation
+# MiniMax Video Generation (H3 v2)
 
 Deterministic client: `scripts/minimax_video.py`. Every paid call needs the
-step-0 preflight from `minimax-design-use` to pass first. The client is
-async-native: create task → poll → retrieve file → verified download.
+step-0 preflight from `minimax-design-use` to pass first. Model:
+`MiniMax-H3`（480P/768P/2K，4~15s）or `MiniMax-H3-Max`（极速，480P/768P，5~15s）.
 
-## Modes
+## Prompt discipline (h3-prompt-writing first)
 
-1. **t2v** — text only:
+H3 prompts are not free prose. Draft every prompt through the vendored
+`h3-prompt-writing` skill, which fixes the structure per input mode:
+
+- **T2VA** (text only): full audiovisual timeline —
+  `integrated_multimodal_description` → `overall_soundscape` →
+  `non_diegetic_music` (see `h3-prompt-writing/references/base-en.txt`).
+- **I2VA** (first frame): start from the frame, develop forward.
+- **FL2VA** (first + last frame): describe the continuous path BETWEEN the two
+  frames — this is the white-model previs anchoring mode.
+- **Ref2VA** (reference images/video/audio): six-section rewrite format
+  (`references/ref-en.txt`).
+- Duration 4–15s: the description must match the requested length exactly.
+- Keep reference labels (`<Picture 1>` …) consistent; concrete details beat
+  words like "cinematic".
+
+## Modes via the client
+
+1. **t2v** — text only (ratio required, not adaptive):
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/minimax_video.py" t2v \
-  --prompt "<shot description>" --out generated/shot-01.mp4
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/minimax_video.py" generate \
+  --prompt "<h3-prompt-writing T2VA structure>" --ratio 16:9 \
+  --duration 8 --resolution 768P --out generated/shot-01.mp4
 ```
 
-2. **i2v** — first-frame image anchors composition:
+2. **i2v** — first frame anchors composition:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/minimax_video.py" i2v \
-  --first-frame renders/shot-01_first.png --prompt "<motion description>" \
-  --out generated/shot-01.mp4
+python3 "${CLAUDE_PROJECT_DIR}/scripts/minimax_video.py" generate \
+  --first-frame renders/shot-01_first.png \
+  --prompt "<I2VA structure>" --out generated/shot-01.mp4
 ```
 
-3. **first/last-frame** — the white-model previs anchor (preferred for
+3. **first/last-frame (FL2VA)** — the white-model previs anchor (preferred for
    storyboarded work): render each shot's first and last frame from the Blender
-   white model, then let Hailuo interpolate:
+   white model, then describe the continuous path between them:
 
 ```bash
-python3 "${CLAUDE_PROJECT_DIR}/scripts/minimax_video.py" i2v \
+python3 "${CLAUDE_PROJECT_DIR}/scripts/minimax_video.py" generate \
   --first-frame renders/shot-01_first.png --last-frame renders/shot-01_last.png \
-  --prompt "<what happens between the two frames>" --out generated/shot-01.mp4
+  --prompt "<FL2VA structure>" --duration 6 --out generated/shot-01.mp4
 ```
 
-Local files are base64-encoded automatically; URLs pass through unchanged.
+4. **reference-image** — subject-consistent generation (S2V family; mutually
+   exclusive with first/last frames): `--reference-image a.png --reference-image
+   b.png`.
+
+Local frames are embedded as data URLs automatically; `mm_file://{file_id}` and
+public URLs pass through.
 
 ## Parameters
 
-- `--duration 6|10` (10s only at 768P), `--resolution 768P|1080P` (1080P is 6s only).
-- `--wait <seconds>` caps polling; a timeout prints the `task_id` — resume later
-  with `query --task-id <id>`, never resubmit a paid task.
-- Model and gateway come from env: `MINIMAX_MODEL` (default `MiniMax-Hailuo-02`),
-  `MINIMAX_BASE` (default 国内 `api.minimaxi.com`).
+- `--duration 4..15` (H3-Max 5..15), `--resolution 480P|768P|2K`,
+  `--ratio` (required for t2v; `adaptive` allowed for i2v/fl2v),
+  `--model MiniMax-H3|MiniMax-H3-Max` (default env `MINIMAX_MODEL`).
+- `--wait <seconds>` caps polling; a timeout prints the `task_id` — resume with
+  `query --task-id <id>` (add `--out` to download on success). Never resubmit.
+- `list` / `cancel --task-id` for task management.
 
 ## Style-leak discipline (white-model frames)
 
 The white-model frame is gray primitives; i2v may keep that style. Run one A/B
-shot before a batch: (a) white-model frame directly + a strong restyle prompt
-("photorealistic cinematic scene, ignore the placeholder style, keep the exact
-composition"); (b) restyle the frame through an image model first. Fix the
+shot before a batch: (a) white-model frame directly + an FL2VA restyle prompt;
+(b) restyle the frame through an image model first (keep composition). Fix the
 winning path into the episode's convention before spending on all shots.
-
-## Prompt contract
-
-- Describe motion and content between the frames, not the composition (the
-  frames already lock it): subject action, camera behavior, atmosphere, style.
-- One shot per generation; per-shot regeneration is the cost-control unit.
 
 ## Never do
 
 - Never submit paid generation without the preflight and the user's intent.
 - Never resubmit a submitted task id; `query` is the only resume path.
 - Never treat a polling timeout as failure — it is a resume state.
-- Never delete or overwrite a downloaded shot; regeneration is per shot id.
+- Never mix first/last-frame mode with reference-image mode in one request.
+- Never invent video facts in the prompt beyond what the frames and the user's
+  brief support; h3-prompt-writing's retention rules apply to Ref2VA rewrites.

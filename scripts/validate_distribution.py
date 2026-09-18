@@ -98,7 +98,7 @@ def main() -> int:
             fail(f"missing hook script: {hook_file}")
 
     print(f"validated {PLUGIN_ID} {version}: "
-          f"{len(list(skills_dir.iterdir()))} skills, 1 vendor source, hooks wired")
+          f"{len(list(skills_dir.iterdir()))} skills, {len(lock['sources'])} vendor sources, hooks wired")
     return 0
 
 

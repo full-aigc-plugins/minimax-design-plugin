@@ -1,13 +1,13 @@
 ---
 name: minimax-design-use
-description: "Route MiniMax design requests: capability preflight first, then video generation (text2video, image2video, first/last-frame), or the vendored mmx toolkit skills for text, image, speech, and music generation."
+description: "Route MiniMax design requests: capability preflight first (mmx CLI login or MINIMAX_API_KEY), then H3 video generation (t2v, i2v, first/last-frame FL2VA), vendored h3-prompt-writing for prompt structure, or mmx toolkit for text, image, speech, and search."
 ---
 
 # MiniMax Design Router
 
-Use this as the entry point. Before any generation, run the capability preflight
-(step 0) — MiniMax authenticates with an API key from the environment, and a
-missing key must surface as actionable guidance, never as a raw API error.
+Use this as the entry point. Before any paid generation, run the capability
+preflight (step 0) — MiniMax authenticates per region, and a missing credential
+must surface as actionable guidance, never as a raw API error.
 
 ## Step 0 — capability preflight (always first)
 
@@ -18,29 +18,37 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/minimax_video.py" check
 Read the output and act on it:
 
 - `MINIMAX_API_KEY: 未设置` → tell the user exactly how to fix it: get a key at
-  https://platform.minimaxi.com (国内) or https://platform.minimax.io (国际),
-  then `export MINIMAX_API_KEY=...` (shell config or project `.env`). Do not
-  proceed to paid generation without the key; do not ask the user to paste the
-  key into chat.
-- `MINIMAX_API_KEY: 已设置` → continue. The gateway line shows which base
-  (国内 api.minimaxi.com / 国际 api.minimax.io) the calls will use.
-- `mmx CLI` lines are informational: the vendored `minimax-multimodal-toolkit`
-  skill needs `mmx` (`npm install -g mmx-cli` + `mmx auth login --api-key`);
-  video generation through `scripts/minimax_video.py` does not.
+  https://platform.minimax.cn (国内) / https://platform.minimax.io (国际) →
+  用户中心 → 接口密钥, then `export MINIMAX_API_KEY=...` (shell config or
+  project `.env`). Do not proceed to paid generation without it; do not ask the
+  user to paste the key into chat.
+- `mmx CLI: 未安装` → the general-purpose path (text/image/speech/vision/search)
+  needs the official Token Plan CLI:
+  `npm install -g mmx-cli && mmx auth login --api-key sk-xxx` (region
+  auto-detected; if 401, `mmx config set --key region --value cn|global`).
+  The v2 API path in `minimax-video-generation` works with just
+  `MINIMAX_API_KEY` and no mmx login.
+- Gateways: 国内 `https://api.minimax.cn`（默认，`MINIMAX_API_HOST` 可覆盖；
+  旧账号 `api.minimaxi.com`）/ 国际 `https://api.minimax.io`. The key and the
+  host must be from the same region or you get `Invalid API key`.
 
 ## Routing
 
-- **Video generation** (text2video, image2video, first/last-frame composition
-  from a white-model previs) → `minimax-video-generation`.
-- **Text / images / speech / music / web search via the mmx CLI** →
-  `minimax-multimodal-toolkit`.
-- **Music / song generation** → `minimax-music-gen`; personalized playlists →
-  `minimax-music-playlist`.
+- **H3 video generation** (t2v, i2v, first/last-frame FL2VA, reference-image) →
+  `minimax-video-generation`. Prompt structure comes from the vendored
+  `h3-prompt-writing` (T2VA/I2VA/FL2VA/L2VA/Ref2VA rewrite format) — always
+  draft H3 prompts through it.
+- **General generation via Token Plan CLI** (text chat, image generate, speech
+  synthesize, vision describe, search) → vendored `minimax-multimodal-toolkit`.
+- **Music / song generation** → `minimax-music-gen`; playlists →
+  `minimax-music-playlist`. (mmx CLI itself has no music command; music goes
+  through the API skills.)
 
 ## Never do
 
 - Never run paid generation without the step-0 preflight passing.
 - Never echo the API key value back into the conversation; show only the masked
-  tail (the check command already does this).
-- Never guess the gateway: 国内 and 国际 accounts are separate — the base URL
-  must match where the key was issued (`MINIMAX_BASE` overrides).
+  tail.
+- Never mix gateways: 国内 (.cn / .minimaxi.com) and 国际 (.io) accounts are
+  separate key spaces.
+- Never resubmit a submitted v2 task id; `query` is the only resume path.

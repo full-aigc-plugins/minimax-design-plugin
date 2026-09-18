@@ -1,6 +1,6 @@
 # MiniMax Design (partme-minimax-design)
 
-Generate **MiniMax Hailuo** videos from your coding agent (Codex / ZCode / Kimi) with environment-variable authentication, **first/last-frame composition anchored by Blender white-model previs frames**, resumable async queries with verified downloads, and verbatim vendored **mmx toolkit** skills (text / image / speech / music).
+Generate **MiniMax H3** videos from your coding agent (Codex / ZCode / Kimi) with environment-variable authentication, **first/last-frame composition anchored by Blender white-model previs frames**, resumable async queries with verified downloads, and verbatim vendored **mmx toolkit** skills (text / image / speech / music).
 
 Status: **v0.1.0 — skills-only distribution** (no MCP server yet; the deterministic client is `scripts/minimax_video.py`).
 
@@ -20,11 +20,17 @@ The `minimax-design-use` skill routes the request and surfaces actionable guidan
 
 | Mode | Anchoring | Command |
 |---|---|---|
-| text2video | prompt only | `minimax_video.py t2v --prompt ... --out ...` |
-| image2video | `first_frame_image` | `minimax_video.py i2v --first-frame ... --out ...` |
-| first/last-frame | white-model previs frames | `minimax_video.py i2v --first-frame ... --last-frame ... --out ...` |
+| text2video | prompt only (ratio required) | `minimax_video.py generate --prompt ... --ratio 16:9 --out ...` |
+| image2video | `first_frame` role | `minimax_video.py generate --first-frame ... --out ...` |
+| first/last-frame (FL2VA) | white-model previs frames | `minimax_video.py generate --first-frame ... --last-frame ... --out ...` |
+| reference-image | subject consistency | `minimax_video.py generate --reference-image ... --out ...` |
 
-- Models: `MiniMax-Hailuo-02` family (default; `MINIMAX_MODEL` overrides), 768P (6s/10s) and 1080P (6s).
+- Model: `MiniMax-H3` (480P/768P/2K, 4–15s) or `MiniMax-H3-Max` (fast, 480P/768P, 5–15s); `MINIMAX_MODEL` overrides.
+- v2 API: `POST {host}/v2/video_generation` with a multimodal `content` array
+  (`first_frame` / `last_frame` / `reference_image` roles); OpenAI-style errors;
+  async tasks pollable via `query --task-id` (`list` / `cancel` included).
+- Prompts are drafted through the vendored **`h3-prompt-writing`** skill
+  (T2VA / I2VA / FL2VA / L2VA / Ref2VA structures from MiniMax-AI/MiniMax-H3).
 - Async with resumable queries: a polling timeout prints the `task_id`; resume with `query --task-id` — never resubmit a paid task.
 - Vendored skills (verbatim from [full-aigc-skills/minimax-skills](https://github.com/full-aigc-skills/minimax-skills), pinned by content digests): `minimax-multimodal-toolkit`, `minimax-music-gen`, `minimax-music-playlist`.
 

@@ -10,7 +10,7 @@ import re
 import sys
 
 INTENT_RE = re.compile(
-    r"minimax|海螺|hailuo|minimax设计|文生视频|图生视频|首尾帧|视频生成",
+    r"minimax|海螺|hailuo|h3|文生视频|图生视频|首尾帧|视频生成",
     re.IGNORECASE,
 )
 
@@ -32,7 +32,7 @@ def main() -> int:
         print(
             "提示：该请求疑似 MiniMax（海螺）相关。入口技能 minimax-design-use 会先做"
             "能力预检（MINIMAX_API_KEY / 网关 / mmx CLI）；视频生成走 minimax-video-generation"
-            "（t2v、i2v、白模首尾帧锚定），文本/图像/语音/音乐走 minimax-multimodal-toolkit。"
+            "（H3 v2：t2v、i2v、白模首尾帧 FL2VA），提示词结构用 h3-prompt-writing，文本/图像/语音/音乐走 minimax-multimodal-toolkit。"
         )
     return 0
 

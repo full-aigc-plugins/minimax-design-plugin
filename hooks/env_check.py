@@ -26,7 +26,7 @@ def main() -> int:
         lines.append(f"MINIMAX_API_KEY: 已设置（尾号 {key[-4:]}）")
     else:
         lines.append("MINIMAX_API_KEY: 未设置——首次使用时按 minimax-design-use 的"
-                     " Step 0 指引配置（platform.minimaxi.com / platform.minimax.io 申请）")
+                     " Step 0 指引配置（platform.minimax.cn / platform.minimax.io 申请）")
 
     base = os.environ.get("MINIMAX_BASE")
     lines.append(f"网关: {base or 'api.minimaxi.com（国内默认，MINIMAX_BASE 可覆盖）'}")
@@ -34,7 +34,7 @@ def main() -> int:
     if shutil.which("mmx"):
         lines.append("mmx CLI: 在 PATH")
     else:
-        lines.append("mmx CLI: 未安装（可选，minimax-multimodal-toolkit 技能需要）")
+        lines.append("mmx CLI: 未安装——通用生成/语音/视觉/搜索需要它（npm install -g mmx-cli && mmx auth login）")
 
     try:
         sys.stdin.read()

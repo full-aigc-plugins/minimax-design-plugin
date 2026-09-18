@@ -25,12 +25,14 @@ hooks/                      门禁层：SessionStart 环境检查、UserPromptSu
 
 ## vendor 铁律
 
-`skills/` 下三个 upstream 技能逐字来自
-`full-aigc-skills/minimax-skills`（当前 main @ 0b72343a…，待上游打 tag 后收紧 ref），
+`skills/` 下四个 upstream 技能逐字来自两个源：`full-aigc-skills/minimax-skills`
+（3 个，main @ 0b72343a…）与 `MiniMax-AI/MiniMax-H3`（h3-prompt-writing，
+main @ d21241f0…）；两源均待上游打 tag 后收紧 ref，
 由 `skills.lock.json` 的逐技能 SHA-256 固定；改上游 → 跑
 `python3 scripts/vendor/skill_vendor.py update` → `check` 过 CI。
 `skills/minimax-design-use` 与 `skills/minimax-video-generation` 是本仓原生技能，
-不进 lock。
+不进 lock。执行层双轨：**mmx-cli（Token Plan 订阅 CLI）** 供通用生成，
+**v2 API 客户端** 供白模首尾帧（FL2VA）精确锚定。
 
 ## 生成纪律
 

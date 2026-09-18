@@ -1,6 +1,6 @@
 # MiniMax 设计（partme-minimax-design）
 
-在编码智能体（Codex / ZCode / Kimi）里生成 **MiniMax 海螺**视频：环境变量鉴权、
+在编码智能体（Codex / ZCode / Kimi）里生成 **MiniMax **H3** 视频：环境变量鉴权、
 **白模首尾帧锚定**、断点续查、经验证的下载，并逐字内置 **mmx 工具箱**技能
 （文本/图像/语音/音乐）。
 
@@ -26,12 +26,18 @@
 
 | 模式 | 锚定 | 命令 |
 |---|---|---|
-| 文生视频 | 仅提示词 | `minimax_video.py t2v --prompt ... --out ...` |
-| 图生视频 | `first_frame_image` 首帧 | `minimax_video.py i2v --first-frame ... --out ...` |
-| 首尾帧 | 白模预演首尾帧 | `minimax_video.py i2v --first-frame ... --last-frame ... --out ...` |
+| 文生视频 | 仅提示词（必填 ratio） | `minimax_video.py generate --prompt ... --ratio 16:9 --out ...` |
+| 图生视频 | `first_frame` 首帧 | `minimax_video.py generate --first-frame ... --out ...` |
+| 首尾帧 FL2VA | 白模预演首尾帧 | `minimax_video.py generate --first-frame ... --last-frame ... --out ...` |
+| 主体参考 | `reference_image` | `minimax_video.py generate --reference-image ... --out ...` |
 
-- 模型：`MiniMax-Hailuo-02` 系列（默认；`MINIMAX_MODEL` 覆盖），768P（6s/10s）与
-  1080P（仅 6s）。
+- 模型：`MiniMax-H3`（480P/768P/2K，4~15s）与 `MiniMax-H3-Max`（极速，480P/768P，5~15s）；
+  `MINIMAX_MODEL` 覆盖。
+- v2 接口：`POST {网关}/v2/video_generation`，content 多模态数组（`first_frame` /
+  `last_frame` / `reference_image` 角色）；OpenAI 风格错误；异步任务用
+  `query --task-id` 续查（含 `list` / `cancel`）。
+- 提示词经内置 **`h3-prompt-writing`** 技能起草（T2VA / I2VA / FL2VA / L2VA /
+  Ref2VA 结构，来自 MiniMax-AI/MiniMax-H3）。
 - 异步任务 + 断点续查：轮询超时会打印 `task_id`，用 `query --task-id` 续查——
   **付费任务永不重复提交**。
 - 内置技能（逐字 vendor 自
