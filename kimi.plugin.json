@@ -1,0 +1,36 @@
+{
+  "name": "minimax-design",
+  "version": "0.1.0",
+  "description": "Generate MiniMax Hailuo videos with environment-variable auth, first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
+  "author": {
+    "name": "Full Stack Skills / PartMe.AI"
+  },
+  "homepage": "https://github.com/partme-ai/partme-minimax-design",
+  "license": "Apache-2.0",
+  "keywords": [
+    "minimax",
+    "hailuo",
+    "video-generation",
+    "first-last-frame"
+  ],
+  "interface": {
+    "displayName": "MiniMax Design",
+    "shortDescription": "Generate videos with MiniMax Hailuo",
+    "longDescription": "Operate MiniMax (海螺) from your coding agent: text2video, image2video with first_frame_image, first/last-frame composition anchored by white-model previs frames, resumable async queries with verified downloads, plus vendored mmx toolkit skills for text, image, speech, and music generation.",
+    "developerName": "Full Stack Skills / PartMe.AI",
+    "websiteURL": "https://github.com/partme-ai/partme-minimax-design"
+  },
+  "skills": "./skills/",
+  "hooks": [
+    {
+      "event": "SessionStart",
+      "command": "python3 ./hooks/env_check.py",
+      "timeout": 30
+    },
+    {
+      "event": "UserPromptSubmit",
+      "command": "python3 ./hooks/check_minimax_intent.py",
+      "timeout": 15
+    }
+  ]
+}

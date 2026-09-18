@@ -1,0 +1,30 @@
+{
+  "name": "minimax-design",
+  "displayName": "MiniMax Design",
+  "displayName_i18n": {
+    "en": "MiniMax Design",
+    "zh-CN": "MiniMax 设计"
+  },
+  "version": "0.1.0",
+  "description": "Generate MiniMax Hailuo videos with environment-variable auth, first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
+  "description_i18n": {
+    "en": "MiniMax Hailuo video generation with environment-variable authentication, white-model first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
+    "zh-CN": "MiniMax 海螺视频生成：环境变量鉴权、白模首尾帧锚定、断点续查，并内置 mmx 工具箱技能（文本/图像/语音/音乐）。"
+  },
+  "author": {
+    "name": "Full Stack Skills / PartMe.AI",
+    "url": "https://github.com/partme-ai"
+  },
+  "homepage": "https://github.com/partme-ai/partme-minimax-design",
+  "repository": "https://github.com/partme-ai/partme-minimax-design",
+  "license": "Apache-2.0",
+  "keywords": [
+    "minimax",
+    "hailuo",
+    "video-generation",
+    "white-model",
+    "previs"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

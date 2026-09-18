@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "package": "minimax-skills",
+      "repo": "https://github.com/full-aigc-skills/minimax-skills.git",
+      "ref": "main",
+      "sha": "0b72343a8d5674aa430d42ba8c72d575cadbba8a",
+      "dest": "skills/",
+      "skills": [
+        "minimax-multimodal-toolkit",
+        "minimax-music-gen",
+        "minimax-music-playlist"
+      ],
+      "sha256": {
+        "minimax-multimodal-toolkit": "ff7dc347288faacca73d1ea31f7dee42d5707bccce63346fa473e0776a0b8494",
+        "minimax-music-gen": "f4a9f10ee1fccc53d1127109ea7191c1efa5eaa66eecc50b5a4c6335ba3604ab",
+        "minimax-music-playlist": "1f0b3f1925d6c014490770d191611fddba9b36de13bdc7a7944d3fdb0b29032a"
+      }
+    }
+  ]
+}

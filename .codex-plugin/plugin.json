@@ -1,0 +1,45 @@
+{
+  "name": "minimax-design",
+  "version": "0.1.0",
+  "description": "Generate MiniMax Hailuo videos with environment-variable auth, first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
+  "author": {
+    "name": "Full Stack Skills / PartMe.AI",
+    "url": "https://github.com/partme-ai"
+  },
+  "homepage": "https://github.com/partme-ai/partme-minimax-design",
+  "repository": "https://github.com/partme-ai/partme-minimax-design",
+  "license": "Apache-2.0",
+  "keywords": [
+    "minimax",
+    "hailuo",
+    "design",
+    "video-generation",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "MiniMax Design",
+    "shortDescription": "Generate videos with MiniMax Hailuo",
+    "longDescription": "Generate MiniMax Hailuo videos through a deterministic client with environment-variable authentication, first/last-frame composition anchored by white-model previs frames, resumable async queries, and verbatim vendored mmx toolkit skills for text, image, speech, and music generation.",
+    "developerName": "Full Stack Skills / PartMe.AI",
+    "category": "Creativity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/partme-ai/partme-minimax-design",
+    "privacyPolicyURL": "https://github.com/partme-ai/partme-minimax-design/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/partme-ai/partme-minimax-design/blob/main/TERMS.md",
+    "defaultPrompt": [
+      "Check my MiniMax credentials and generate a test video",
+      "Turn these white-model first/last frames into a Hailuo video",
+      "Generate background music for my episode with MiniMax"
+    ],
+    "brandColor": "#7C5CFF",
+    "composerIcon": "./assets/composer-icon.png",
+    "logo": "./assets/logo-approved.png",
+    "logoDark": "./assets/logo-approved.png",
+    "screenshots": []
+  }
+}
