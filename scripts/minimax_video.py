@@ -42,30 +42,141 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-HOST = os.environ.get("MINIMAX_API_HOST", "https://api.minimax.cn").rstrip("/")
-MODEL = os.environ.get("MINIMAX_MODEL", "MiniMax-H3")
+SCRIPT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _config_file() -> Path:
+    """用户级凭据文件；MINIMAX_CONFIG_DIR 可覆盖（测试/便携场景）。"""
+    base = os.environ.get("MINIMAX_CONFIG_DIR") or str(Path.home() / ".minimax-design")
+    return Path(base) / "credentials.json"
+
+
+def _parse_env_file(path: Path) -> dict:
+    """KEY=VALUE 行解析（# 注释、成对引号剥除）；文件不存在返回空。"""
+    values: dict[str, str] = {}
+    try:
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key:
+                values[key] = value
+    except OSError:
+        pass
+    return values
+
+
+def _user_credentials() -> dict:
+    """用户级配置 credentials.json（auth 子命令写入，权限 600）。"""
+    try:
+        return json.loads(_config_file().read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def get_setting(name: str) -> tuple[str | None, str]:
+    """四级解析链：进程环境 > 项目 .env > 插件 .env > 用户配置文件。
+
+    返回 (值, 来源)。值不含前后空白；空字符串视为未设置。
+    """
+    direct = os.environ.get(name)
+    if direct and direct.strip():
+        return direct.strip(), "环境变量"
+    for label, path in (("项目 .env", Path.cwd() / ".env"),
+                        ("插件 .env", SCRIPT_ROOT / ".env")):
+        value = _parse_env_file(path).get(name)
+        if value and value.strip():
+            return value.strip(), label
+    cred = _user_credentials()
+    if cred.get(name) and str(cred[name]).strip():
+        return str(cred[name]).strip(), f"用户配置（{_config_file()}）"
+    return None, "未设置"
+
+
+def get_key() -> tuple[str | None, str]:
+    return get_setting("MINIMAX_API_KEY")
+
+
+def auth_setup(args) -> int:
+    """跨平台持久化配置：把密钥写入用户配置文件（权限 600）。"""
+    creds = _user_credentials()
+    if args.api_key:
+        creds["MINIMAX_API_KEY"] = args.api_key
+    elif args.clear:
+        creds.pop("MINIMAX_API_KEY", None)
+    else:
+        sys.exit("auth 需要 --api-key sk-xxx（或 --clear 清除）")
+    target = _config_file()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(creds, ensure_ascii=False, indent=2) + "\n",
+                      encoding="utf-8")
+    try:
+        os.chmod(target, 0o600)
+    except OSError:
+        pass
+    if args.api_key:
+        print(f"已写入 {target}（尾号 {args.api_key[-4:]}）——优先级低于环境变量与 .env")
+    else:
+        print(f"已清除 {target} 中的 MINIMAX_API_KEY")
+    return 0
+
+
+def platform_setup_hint(platform: str | None = None) -> list[str]:
+    """按目标操作系统给出会话级与持久化的设置命令。
+
+    platform: "windows" / "macos" / "linux"；缺省自动探测（参数仅测试注入用）。
+    """
+    platform = platform or (
+        "windows" if os.name == "nt" else ("macos" if sys.platform == "darwin" else "linux"))
+    if platform == "windows":
+        return [
+            '  PowerShell（当前会话）: $env:MINIMAX_API_KEY="sk-..."',
+            '  PowerShell（永久）    : [Environment]::SetEnvironmentVariable("MINIMAX_API_KEY","sk-...","User")',
+            '  CMD（永久）           : setx MINIMAX_API_KEY "sk-..."   # 新开的终端生效',
+        ]
+    if platform == "macos":
+        return [
+            "  zsh（永久）: echo 'export MINIMAX_API_KEY=sk-...' >> ~/.zshrc && source ~/.zshrc",
+            "  bash（永久）: echo 'export MINIMAX_API_KEY=sk-...' >> ~/.bash_profile",
+            "  跨平台免改 shell: python3 scripts/minimax_video.py auth --api-key sk-...",
+        ]
+    return [
+        "  bash（永久）: echo 'export MINIMAX_API_KEY=sk-...' >> ~/.bashrc && source ~/.bashrc",
+        "  跨平台免改 shell: python3 scripts/minimax_video.py auth --api-key sk-...",
+    ]
 
 
 def check() -> int:
     """能力预检：鉴权与依赖是否就绪。永远 exit 0，只输出可操作的状态行。"""
     lines: list[str] = []
-    key = os.environ.get("MINIMAX_API_KEY")
+    key, source = get_key()
     if key:
-        lines.append(f"MINIMAX_API_KEY: 已设置（尾号 {key[-4:]}）")
+        lines.append(f"MINIMAX_API_KEY: 已设置，来源={source}（尾号 {key[-4:]}）")
     else:
         lines.append("MINIMAX_API_KEY: 未设置")
         lines.append("  获取: https://platform.minimax.cn （国内）/ https://platform.minimax.io （国际）"
                      " → 用户中心 → 接口密钥")
-        lines.append("  配置: export MINIMAX_API_KEY=你的密钥   # 建议写入 shell 配置或项目 .env")
-    lines.append(f"网关: {HOST}（MINIMAX_API_HOST 可覆盖；国内 .cn / .minimaxi.com，国际 .io）")
-    lines.append(f"模型: {MODEL}")
+        lines.append("  按当前系统设置：")
+        lines.extend(platform_setup_hint())
+
+    host, host_source = get_setting("MINIMAX_API_HOST")
+    lines.append(f"网关: {(host or 'https://api.minimax.cn').rstrip('/')}（来源={host_source}；"
+                 "国内 .cn / .minimaxi.com，国际 .io）")
+    model, _ = get_setting("MINIMAX_MODEL")
+    lines.append(f"模型: {model or 'MiniMax-H3'}")
 
     mmx = shutil.which("mmx")
     if mmx:
         lines.append(f"mmx CLI: {mmx}")
-        auth = subprocess.run(["mmx", "auth", "status"], capture_output=True, text=True, timeout=20)
-        status = (auth.stdout or "").strip().splitlines()
-        lines.append("mmx 登录: " + (status[-1] if status else "未知（mmx auth status 无输出）"))
+        try:
+            auth = subprocess.run(["mmx", "auth", "status"], capture_output=True, text=True, timeout=20)
+            status = (auth.stdout or "").strip().splitlines()
+            lines.append("mmx 登录: " + (status[-1] if status else "未知（mmx auth status 无输出）"))
+        except Exception as exc:
+            lines.append(f"mmx 登录: 检测失败（{exc}）")
     else:
         lines.append("mmx CLI: 未安装——通用生成/语音/视觉/搜索需要它（Token Plan 订阅）")
         lines.append("  安装: npm install -g mmx-cli && mmx auth login --api-key sk-xxx")
@@ -80,16 +191,18 @@ def check() -> int:
 
 
 def headers() -> dict:
-    key = os.environ.get("MINIMAX_API_KEY")
+    key, source = get_key()
     if not key:
-        sys.exit("缺 MINIMAX_API_KEY 环境变量——获取: https://platform.minimax.cn → 用户中心 → 接口密钥；"
-                 "配置: export MINIMAX_API_KEY=你的密钥")
+        sys.exit("缺 MINIMAX_API_KEY（检查来源: " + source + "）——获取: https://platform.minimax.cn → "
+                 "用户中心 → 接口密钥；或运行: python3 scripts/minimax_video.py auth --api-key sk-xxx")
     return {"Content-Type": "application/json", "Authorization": f"Bearer {key}"}
 
 
 def call(method: str, path: str, payload: dict | None = None) -> dict:
+    host, _ = get_setting("MINIMAX_API_HOST")
+    host = (host or "https://api.minimax.cn").rstrip("/")
     req = urllib.request.Request(
-        HOST + path,
+        host + path,
         data=json.dumps(payload).encode() if payload is not None else None,
         headers=headers(),
         method=method,
@@ -152,13 +265,17 @@ def main() -> None:
 
     sub.add_parser("check", help="能力预检（鉴权/依赖，exit 0）")
 
+    a = sub.add_parser("auth", help="跨平台持久化密钥（写入 ~/.minimax-design/credentials.json，权限 600）")
+    a.add_argument("--api-key", help="写入密钥（建议从剪贴板粘贴，勿进聊天记录）")
+    a.add_argument("--clear", action="store_true", help="清除已存密钥")
+
     g = sub.add_parser("generate", help="提交 H3 v2 生成任务并轮询")
     g.add_argument("--prompt", required=True, help="非空提示词（≤7000 字符；首尾帧模式描述两帧间运动）")
     g.add_argument("--first-frame", help="首帧图（本地文件/URL/mm_file）")
     g.add_argument("--last-frame", help="尾帧图（须与首帧成对）")
     g.add_argument("--reference-image", action="append", default=[],
                    help="主体参考图（可重复；与首尾帧互斥）")
-    g.add_argument("--model", default=MODEL, choices=["MiniMax-H3", "MiniMax-H3-Max"])
+    g.add_argument("--model", default=None, choices=["MiniMax-H3", "MiniMax-H3-Max"])
     g.add_argument("--duration", type=int, default=6, help="4~15 秒（H3-Max 5~15）")
     g.add_argument("--resolution", default="768P", choices=["480P", "768P", "2K"])
     g.add_argument("--ratio", help="文生视频必填且不能 adaptive；图生视频可 adaptive")
@@ -177,8 +294,13 @@ def main() -> None:
 
     if args.cmd == "check":
         sys.exit(check())
+    if args.cmd == "auth":
+        sys.exit(auth_setup(args))
 
     if args.cmd == "generate":
+        if not args.model:
+            args.model, _ = get_setting("MINIMAX_MODEL")
+            args.model = args.model or "MiniMax-H3"
         if not (4 <= args.duration <= 15):
             sys.exit("duration 取值 4~15（H3-Max 5~15）")
         payload: dict = {

@@ -44,6 +44,15 @@ Read the output and act on it:
   `minimax-music-playlist`. (mmx CLI itself has no music command; music goes
   through the API skills.)
 
+## Credential setup (cross-platform)
+
+`MINIMAX_API_KEY` resolution order: process env → project `.env` → plugin `.env` →
+`~/.minimax-design/credentials.json`. Persist it on any OS with
+`python3 scripts/minimax_video.py auth --api-key sk-...` (chmod 600); clear with
+`auth --clear`. Windows session: PowerShell `$env:MINIMAX_API_KEY="sk-..."`;
+persistent: `setx MINIMAX_API_KEY "sk-..."`. macOS/Linux persistent: append
+`export MINIMAX_API_KEY=sk-...` to `~/.zshrc` / `~/.bashrc`.
+
 ## Never do
 
 - Never run paid generation without the step-0 preflight passing.
