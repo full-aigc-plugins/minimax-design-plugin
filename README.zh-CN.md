@@ -1,10 +1,10 @@
 # MiniMax 设计（partme-minimax-design）
 
-在编码智能体（Codex / ZCode / Kimi）里生成 **MiniMax **H3** 视频：环境变量鉴权、
+在编码智能体（Codex / ZCode / Kimi）里生成 **MiniMax H3** 视频：环境变量鉴权、
 **白模首尾帧锚定**、断点续查、经验证的下载，并逐字内置 **mmx 工具箱**技能
 （文本/图像/语音/音乐）。
 
-状态：**v0.1.0 —— 纯技能分发**（暂无 MCP server；确定性客户端是
+状态：**v0.4.2 —— 跨宿主技能与确定性客户端分发**（暂无 MCP server；可执行客户端是
 `scripts/minimax_video.py`）。
 
 ## 快速开始
@@ -71,6 +71,75 @@
 - 架构与约定见 `docs/`
 - [上游技能](https://github.com/full-aigc-skills/minimax-skills)——逐字 vendor，
   内容由 `skills.lock.json` 的 SHA-256 固定
+
+<!-- FULL_STACK_DOC_START -->
+## 项目定位与运行边界
+
+`minimax-design-plugin` 是面向 Codex、ZCode 与 Kimi 的跨宿主插件。当前基础版本为 `0.4.2`，三个宿主清单分别是 `.codex-plugin/plugin.json`、`.zcode-plugin/plugin.json` 和 `kimi.plugin.json`。README 中的版本、技能数量和安装来源以这些清单、`skills.lock.json` 与正式 Release 为准。
+
+```text
+宿主请求
+  │
+  ▼
+三端 manifest / command / skill discovery
+  │
+  ▼
+插件本地 Harness 或供应商客户端
+  │
+  ├── 成功：本地产物 + 回执 + 哈希
+  └── 失败：稳定错误 + 可恢复状态，不静默重试付费动作
+```
+
+### 能力边界
+
+- 插件负责宿主适配、配置注入、可执行脚本和插件专属技能；
+- 外部技能只能从不可变 Release 按 lock 同步，受管副本禁止直接修改；
+- “安装成功”“manifest 被发现”“MCP/Hook 已加载”“供应商调用成功”是四个不同证据等级；
+- 网络、付费生成、上传、覆盖、删除和发布不会因安装插件而自动获得授权。
+
+## 三端清单与技能供应链
+
+| 宿主 | 清单 | 声明版本 |
+|---|---|---|
+| Codex | `.codex-plugin/plugin.json` | `0.4.2+codex.20260920` |
+| ZCode | `.zcode-plugin/plugin.json` | `0.4.2` |
+| Kimi | `kimi.plugin.json` | `0.4.2` |
+
+| 外部技能包 | Release ref | Peeled SHA | 技能数 |
+|---|---|---|---:|
+| `minimax-skills` | `v1.1.1` | `6c27146be428` | 12 |
+
+插件专属技能：`minimax-design-use`, `minimax-video-generation`。外部技能共 12 个；插件专属技能不进入 `skills.lock.json`。
+
+## 验证与发布门禁
+
+```bash
+python3 scripts/lint_skills.py
+python3 scripts/validate_distribution.py
+python3 scripts/vendor/skill_vendor.py check --offline
+python3 scripts/vendor/skill_vendor.py check
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+发布前必须验证：三端基础版本一致、Codex build metadata 合法、受管技能在线/离线摘要一致、插件专属技能已声明、测试通过、市场安装源固定到 Release tag，并在干净环境检查加载结果。
+
+## 安全与凭据
+
+- 凭据只通过宿主的 sensitive 配置、环境变量或外部秘密系统注入；
+- README、日志、错误和测试夹具不得包含真实 token；
+- 网络请求必须有超时、状态分类和有限重试；付费异步任务先持久化 task ID，再允许查询恢复；
+- 路径写入限制在批准目录，已有文件默认不得覆盖。
+
+## 故障排查
+
+| 现象 | 证据入口 | 处理 |
+|---|---|---|
+| 插件未发现 | 对应宿主 manifest、市场 pin、安装缓存 | 核对插件 ID、版本和 Release ref |
+| 技能数量不一致 | `skills.lock.json`、`plugin-local-skills.json` | 运行 vendor check，禁止手工修受管副本 |
+| MCP/Hook 未加载 | 宿主诊断、配置 Schema、可执行文件 | 区分配置缺失、工具缺失和运行时错误 |
+| 请求超时 | task ID、错误响应、超时配置 | 查询已有任务，不自动再次提交付费请求 |
+| 发布后市场仍是旧内容 | tag、Release、市场生成器输出 | 校验 tag SHA 后重新生成和验证市场 |
+<!-- FULL_STACK_DOC_END -->
 
 ## License
 

@@ -2,7 +2,7 @@
 
 Generate **MiniMax H3** videos from your coding agent (Codex / ZCode / Kimi) with environment-variable authentication, **first/last-frame composition anchored by Blender white-model previs frames**, resumable async queries with verified downloads, and verbatim vendored **mmx toolkit** skills (text / image / speech / music).
 
-Status: **v0.1.0 — skills-only distribution** (no MCP server yet; the deterministic client is `scripts/minimax_video.py`).
+Status: **v0.4.2 — cross-host skill and deterministic-client distribution** (no MCP server yet; the executable client is `scripts/minimax_video.py`).
 
 ## Quick start
 
@@ -60,6 +60,68 @@ See the companion kit for the full episode workflow (shot-table schema, previs c
 - [中文说明](README.zh-CN.md)
 - Architecture & conventions: `docs/`
 - [Upstream skills](https://github.com/full-aigc-skills/minimax-skills) — vendored verbatim; content pinned by SHA-256 in `skills.lock.json`
+
+<!-- FULL_STACK_DOC_START -->
+## Project position and runtime boundary
+
+`minimax-design-plugin` is a cross-host plugin for Codex, ZCode, and Kimi. Its current base version is `0.4.2`. Versions, skill counts, and installation sources are derived from the three host manifests, `skills.lock.json`, and immutable GitHub Releases.
+
+```text
+host request -> manifest/command/skill discovery -> local harness or provider client
+             -> artifact + receipt + hash
+             -> or stable failure + recoverable state
+```
+
+### Boundaries
+
+- The plugin owns host adaptation, configuration injection, executable clients, and declared plugin-local skills.
+- External skills are synchronized only from immutable releases; managed copies are not edited directly.
+- Installation, manifest discovery, hook/MCP loading, and successful provider execution are distinct proof levels.
+- Installation does not authorize network use, paid generation, upload, overwrite, deletion, or publishing.
+
+## Host manifests and skill supply chain
+
+| Host | Manifest | Declared version |
+|---|---|---|
+| Codex | `.codex-plugin/plugin.json` | `0.4.2+codex.20260920` |
+| ZCode | `.zcode-plugin/plugin.json` | `0.4.2` |
+| Kimi | `kimi.plugin.json` | `0.4.2` |
+
+| External package | Release ref | Peeled SHA | Skills |
+|---|---|---|---:|
+| `minimax-skills` | `v1.1.1` | `6c27146be428` | 12 |
+
+Plugin-local skills: `minimax-design-use`, `minimax-video-generation`. The external lock contains 12 skills; plugin-local skills do not belong in `skills.lock.json`.
+
+## Verification and release gates
+
+```bash
+python3 scripts/lint_skills.py
+python3 scripts/validate_distribution.py
+python3 scripts/vendor/skill_vendor.py check --offline
+python3 scripts/vendor/skill_vendor.py check
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+Before release, verify aligned base versions, legal Codex build metadata, online/offline skill digests, the plugin-local manifest, tests, immutable marketplace refs, and clean-environment host loading.
+
+## Security and credentials
+
+- Inject credentials only through sensitive host configuration, environment variables, or an external secret store.
+- Never place real tokens in README files, logs, errors, or fixtures.
+- Network calls require timeouts, stable failure classification, and bounded retries. Persist paid async task IDs before polling or recovery.
+- Restrict writes to approved output roots; existing files are not overwritten by default.
+
+## Troubleshooting
+
+| Symptom | Evidence | Resolution |
+|---|---|---|
+| Plugin not discovered | Host manifest, marketplace pin, install cache | Check plugin ID, version, and release ref |
+| Skill count drift | `skills.lock.json`, `plugin-local-skills.json` | Run vendor checks; do not patch managed copies |
+| Hook or MCP not loaded | Host diagnostics, schema, executable availability | Separate missing config, missing tool, and runtime failure |
+| Request timeout | Task ID, provider error, timeout config | Query the existing task; do not resubmit a paid operation automatically |
+| Marketplace serves old content | Tag, Release, generator output | Verify tag SHA, then regenerate and validate the marketplace |
+<!-- FULL_STACK_DOC_END -->
 
 ## License
 
