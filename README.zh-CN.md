@@ -4,7 +4,7 @@
 **白模首尾帧锚定**、断点续查、经验证的下载，并逐字内置 **mmx 工具箱**技能
 （文本/图像/语音/音乐）。
 
-状态：**v0.4.2 —— 跨宿主技能与确定性客户端分发**（暂无 MCP server；可执行客户端是
+状态：**v0.4.3 —— 跨宿主技能与确定性客户端分发**（暂无 MCP server；可执行客户端是
 `scripts/minimax_video.py`）。
 
 ## 快速开始
@@ -75,7 +75,7 @@
 <!-- FULL_STACK_DOC_START -->
 ## 项目定位与运行边界
 
-`minimax-design-plugin` 是面向 Codex、ZCode 与 Kimi 的跨宿主插件。当前基础版本为 `0.4.2`，三个宿主清单分别是 `.codex-plugin/plugin.json`、`.zcode-plugin/plugin.json` 和 `kimi.plugin.json`。README 中的版本、技能数量和安装来源以这些清单、`skills.lock.json` 与正式 Release 为准。
+`minimax-design-plugin` 是面向 Codex、ZCode 与 Kimi 的跨宿主插件。当前基础版本为 `0.4.3`，三个宿主清单分别是 `.codex-plugin/plugin.json`、`.zcode-plugin/plugin.json` 和 `kimi.plugin.json`。README 中的版本、技能数量和安装来源以这些清单、`skills.lock.json` 与正式 Release 为准。
 
 ```text
 宿主请求
@@ -101,9 +101,9 @@
 
 | 宿主 | 清单 | 声明版本 |
 |---|---|---|
-| Codex | `.codex-plugin/plugin.json` | `0.4.2+codex.20260920` |
-| ZCode | `.zcode-plugin/plugin.json` | `0.4.2` |
-| Kimi | `kimi.plugin.json` | `0.4.2` |
+| Codex | `.codex-plugin/plugin.json` | `0.4.3+codex.20260920` |
+| ZCode | `.zcode-plugin/plugin.json` | `0.4.3` |
+| Kimi | `kimi.plugin.json` | `0.4.3` |
 
 | 外部技能包 | Release ref | Peeled SHA | 技能数 |
 |---|---|---|---:|

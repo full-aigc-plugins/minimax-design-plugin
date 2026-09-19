@@ -2,7 +2,7 @@
 
 Generate **MiniMax H3** videos from your coding agent (Codex / ZCode / Kimi) with environment-variable authentication, **first/last-frame composition anchored by Blender white-model previs frames**, resumable async queries with verified downloads, and verbatim vendored **mmx toolkit** skills (text / image / speech / music).
 
-Status: **v0.4.2 — cross-host skill and deterministic-client distribution** (no MCP server yet; the executable client is `scripts/minimax_video.py`).
+Status: **v0.4.3 — cross-host skill and deterministic-client distribution** (no MCP server yet; the executable client is `scripts/minimax_video.py`).
 
 ## Quick start
 
@@ -64,7 +64,7 @@ See the companion kit for the full episode workflow (shot-table schema, previs c
 <!-- FULL_STACK_DOC_START -->
 ## Project position and runtime boundary
 
-`minimax-design-plugin` is a cross-host plugin for Codex, ZCode, and Kimi. Its current base version is `0.4.2`. Versions, skill counts, and installation sources are derived from the three host manifests, `skills.lock.json`, and immutable GitHub Releases.
+`minimax-design-plugin` is a cross-host plugin for Codex, ZCode, and Kimi. Its current base version is `0.4.3`. Versions, skill counts, and installation sources are derived from the three host manifests, `skills.lock.json`, and immutable GitHub Releases.
 
 ```text
 host request -> manifest/command/skill discovery -> local harness or provider client
@@ -83,9 +83,9 @@ host request -> manifest/command/skill discovery -> local harness or provider cl
 
 | Host | Manifest | Declared version |
 |---|---|---|
-| Codex | `.codex-plugin/plugin.json` | `0.4.2+codex.20260920` |
-| ZCode | `.zcode-plugin/plugin.json` | `0.4.2` |
-| Kimi | `kimi.plugin.json` | `0.4.2` |
+| Codex | `.codex-plugin/plugin.json` | `0.4.3+codex.20260920` |
+| ZCode | `.zcode-plugin/plugin.json` | `0.4.3` |
+| Kimi | `kimi.plugin.json` | `0.4.3` |
 
 | External package | Release ref | Peeled SHA | Skills |
 |---|---|---|---:|

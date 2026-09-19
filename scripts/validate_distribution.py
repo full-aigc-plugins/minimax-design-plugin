@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ID = "minimax-design"
-REPOSITORY = "https://github.com/partme-ai/partme-minimax-design"
+REPOSITORY = "https://github.com/full-aigc-plugins/minimax-design-plugin"
 LEGAL = ("LICENSE", "NOTICE", "PRIVACY.md", "README.md", "README.zh-CN.md",
          "TERMS.md", "THIRD_PARTY_NOTICES.md")
 

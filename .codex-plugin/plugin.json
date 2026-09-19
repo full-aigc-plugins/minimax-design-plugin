@@ -6,8 +6,8 @@
     "name": "Full Stack Skills / PartMe.AI",
     "url": "https://github.com/partme-ai"
   },
-  "homepage": "https://github.com/partme-ai/partme-minimax-design",
-  "repository": "https://github.com/partme-ai/partme-minimax-design",
+  "homepage": "https://github.com/full-aigc-plugins/minimax-design-plugin",
+  "repository": "https://github.com/full-aigc-plugins/minimax-design-plugin",
   "license": "Apache-2.0",
   "keywords": [
     "minimax",
@@ -28,9 +28,9 @@
       "Read",
       "Write"
     ],
-    "websiteURL": "https://github.com/partme-ai/partme-minimax-design",
-    "privacyPolicyURL": "https://github.com/partme-ai/partme-minimax-design/blob/main/PRIVACY.md",
-    "termsOfServiceURL": "https://github.com/partme-ai/partme-minimax-design/blob/main/TERMS.md",
+    "websiteURL": "https://github.com/full-aigc-plugins/minimax-design-plugin",
+    "privacyPolicyURL": "https://github.com/full-aigc-plugins/minimax-design-plugin/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/full-aigc-plugins/minimax-design-plugin/blob/main/TERMS.md",
     "defaultPrompt": [
       "Check my MiniMax credentials and generate a test video",
       "Turn these white-model first/last frames into a Hailuo video",

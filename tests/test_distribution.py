@@ -20,7 +20,7 @@ class DistributionTests(unittest.TestCase):
         manifest = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
         self.assertEqual(manifest["name"], "minimax-design")
         self.assertEqual(manifest["repository"],
-                         "https://github.com/partme-ai/partme-minimax-design")
+                         "https://github.com/full-aigc-plugins/minimax-design-plugin")
 
     def test_zcode_and_kimi_versions_match(self) -> None:
         import json

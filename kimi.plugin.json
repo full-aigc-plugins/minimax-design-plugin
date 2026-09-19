@@ -5,7 +5,7 @@
   "author": {
     "name": "Full Stack Skills / PartMe.AI"
   },
-  "homepage": "https://github.com/partme-ai/partme-minimax-design",
+  "homepage": "https://github.com/full-aigc-plugins/minimax-design-plugin",
   "license": "Apache-2.0",
   "keywords": [
     "minimax",
@@ -18,7 +18,7 @@
     "shortDescription": "Generate H3 videos with MiniMax (first/last-frame anchoring)",
     "longDescription": "Operate MiniMax (海螺) from your coding agent: text2video, image2video with first_frame_image, first/last-frame composition anchored by white-model previs frames, resumable async queries with verified downloads, plus vendored mmx toolkit skills for text, image, speech, and music generation.",
     "developerName": "Full Stack Skills / PartMe.AI",
-    "websiteURL": "https://github.com/partme-ai/partme-minimax-design"
+    "websiteURL": "https://github.com/full-aigc-plugins/minimax-design-plugin"
   },
   "skills": "./skills/",
   "hooks": [
