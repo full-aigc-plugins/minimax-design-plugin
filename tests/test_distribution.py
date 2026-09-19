@@ -25,10 +25,11 @@ class DistributionTests(unittest.TestCase):
     def test_zcode_and_kimi_versions_match(self) -> None:
         import json
         codex = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
+        base_version = codex["version"].split("+", 1)[0]
         for rel in (".zcode-plugin/plugin.json", "kimi.plugin.json"):
             m = json.loads((ROOT / rel).read_text())
             self.assertEqual(m["name"], codex["name"], rel)
-            self.assertEqual(m["version"], codex["version"], rel)
+            self.assertEqual(m["version"], base_version, rel)
 
     def test_vendored_skills_match_lock(self) -> None:
         import json
@@ -37,10 +38,6 @@ class DistributionTests(unittest.TestCase):
             for name, digest in source["sha256"].items():
                 self.assertTrue((ROOT / "skills" / name / "SKILL.md").is_file(),
                                 f"missing vendored skill {name}")
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 class CapabilitySurfaceTests(unittest.TestCase):
@@ -59,7 +56,30 @@ class CapabilitySurfaceTests(unittest.TestCase):
     def test_zcode_userconfig_declares_sensitive_key(self) -> None:
         import json
         d = json.loads((ROOT / ".zcode-plugin/plugin.json").read_text())
-        uc = {u["key"]: u for u in d.get("userConfig", [])}
+        raw = d.get("userConfig", {})
+        uc = raw if isinstance(raw, dict) else {item["key"]: item for item in raw}
         self.assertTrue(uc["MINIMAX_API_KEY"].get("sensitive"))
         self.assertIn(d.get("commands"), ("./commands", "./commands/"))
         self.assertIn(d.get("agents"), ("./agents", "./agents/"))
+
+    def test_managed_and_plugin_local_skill_counts(self) -> None:
+        import json
+        lock = json.loads((ROOT / "skills.lock.json").read_text())
+        local = json.loads((ROOT / "plugin-local-skills.json").read_text())
+        managed = {name for source in lock["sources"] for name in source["skills"]}
+        plugin_local = set(local["skills"])
+        actual = {
+            path.name
+            for path in (ROOT / "skills").iterdir()
+            if path.is_dir() and (path / "SKILL.md").is_file()
+        }
+        self.assertEqual(12, len(managed))
+        self.assertEqual(
+            {"minimax-design-use", "minimax-video-generation"},
+            plugin_local,
+        )
+        self.assertEqual(managed | plugin_local, actual)
+
+
+if __name__ == "__main__":
+    unittest.main()

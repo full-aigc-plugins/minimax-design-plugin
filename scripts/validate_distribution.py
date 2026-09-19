@@ -48,14 +48,15 @@ def main() -> int:
     if codex.get("repository") != REPOSITORY:
         fail("codex manifest repository mismatch")
     version = codex.get("version", "")
-    if not re.match(r"\d+\.\d+\.\d+", version):
+    base_version = version.split("+", 1)[0]
+    if not re.fullmatch(r"\d+\.\d+\.\d+", base_version):
         fail(f"codex manifest version not semver: {version}")
     for label, m in (("zcode", zcode), ("kimi", kimi)):
-        if m.get("name") != PLUGIN_ID or m.get("version") != version:
-            fail(f"{label} manifest name/version must match codex manifest")
+        if m.get("name") != PLUGIN_ID or m.get("version") != base_version:
+            fail(f"{label} manifest name/base version must match codex manifest")
     entry = market["plugins"][0]
-    if entry.get("name") != PLUGIN_ID or entry.get("version") != version:
-        fail("marketplace entry name/version must match codex manifest")
+    if entry.get("name") != PLUGIN_ID or entry.get("version") != base_version:
+        fail("marketplace entry name/base version must match codex manifest")
 
     for legal in LEGAL:
         if not (ROOT / legal).is_file():
@@ -110,8 +111,14 @@ def main() -> int:
                 fail(f"agents/{agent.name}: missing {key}")
 
     zc = load_json(".zcode-plugin/plugin.json")
-    uc = zc.get("userConfig", [])
-    if not any(u.get("key") == "MINIMAX_API_KEY" and u.get("sensitive") for u in uc):
+    uc = zc.get("userConfig", {})
+    if isinstance(uc, dict):
+        api_key = uc.get("MINIMAX_API_KEY", {})
+    elif isinstance(uc, list):
+        api_key = next((item for item in uc if item.get("key") == "MINIMAX_API_KEY"), {})
+    else:
+        api_key = {}
+    if not api_key.get("sensitive"):
         fail("zcode userConfig must declare MINIMAX_API_KEY as sensitive")
 
     hooks = load_json("hooks/hooks.json")
