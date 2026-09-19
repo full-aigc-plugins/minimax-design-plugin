@@ -5,7 +5,7 @@
     "en": "MiniMax Design",
     "zh-CN": "MiniMax 设计"
   },
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Generate MiniMax H3 videos with env-var auth, first/last-frame FL2VA anchoring, resumable v2 queries, 12 externally managed skills, 2 plugin-local skills, commands, and cross-platform credential setup.",
   "description_i18n": {
     "en": "MiniMax Hailuo video generation with environment-variable authentication, white-model first/last-frame anchoring, resumable queries, and vendored mmx toolkit skills.",
