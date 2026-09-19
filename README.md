@@ -50,7 +50,7 @@ See the companion kit for the full episode workflow (shot-table schema, previs c
 | Platform | Manifest | Install |
 |---|---|---|
 | Codex | `.codex-plugin/plugin.json` | add the `partme-ai` marketplace entry / `codex plugin add minimax-design@<market>` |
-| ZCode | `.zcode-plugin/plugin.json` | marketplace entry, hooks wired |
+| ZCode | `.zcode-plugin/plugin.json` | marketplace entry; standard `hooks/hooks.json` is auto-discovered once |
 | Kimi | `kimi.plugin.json` | flat skills + hooks |
 
 `.agents/plugins/marketplace.json` carries the Codex marketplace entry (`AVAILABLE` installation, `ON_USE` authentication).

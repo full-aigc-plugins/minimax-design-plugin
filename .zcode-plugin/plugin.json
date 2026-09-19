@@ -26,7 +26,6 @@
     "previs"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks.json",
   "commands": "./commands",
   "agents": "./agents",
   "userConfig": {

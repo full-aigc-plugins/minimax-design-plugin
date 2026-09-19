@@ -61,6 +61,11 @@ class CapabilitySurfaceTests(unittest.TestCase):
         self.assertTrue(uc["MINIMAX_API_KEY"].get("sensitive"))
         self.assertIn(d.get("commands"), ("./commands", "./commands/"))
         self.assertIn(d.get("agents"), ("./agents", "./agents/"))
+        self.assertNotIn(
+            "hooks",
+            d,
+            "ZCode auto-discovers hooks/hooks.json; an explicit pointer loads hooks twice",
+        )
 
     def test_managed_and_plugin_local_skill_counts(self) -> None:
         import json

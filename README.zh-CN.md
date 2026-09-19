@@ -63,7 +63,7 @@
 | 平台 | 清单 | 说明 |
 |---|---|---|
 | Codex | `.codex-plugin/plugin.json` | `partme-ai` market 条目 / `codex plugin add` |
-| ZCode | `.zcode-plugin/plugin.json` | market 条目，钩子已接 |
+| ZCode | `.zcode-plugin/plugin.json` | market 条目；标准 `hooks/hooks.json` 由宿主自动发现一次 |
 | Kimi | `kimi.plugin.json` | 扁平技能 + 钩子 |
 
 ## 文档
