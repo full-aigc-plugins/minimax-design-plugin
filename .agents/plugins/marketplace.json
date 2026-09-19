@@ -9,7 +9,7 @@
       "source": {
         "source": "url",
         "url": "https://github.com/partme-ai/partme-minimax-design.git",
-        "ref": "main"
+        "ref": "v0.4.2"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -18,11 +18,11 @@
       "category": "Creativity",
       "version": "0.4.2",
       "description": "Generate MiniMax H3 videos with env-var auth, first/last-frame FL2VA anchoring, resumable v2 queries, 12 externally managed skills, 2 plugin-local skills, commands, and cross-platform credential setup.",
-      "icon": "https://raw.githubusercontent.com/partme-ai/partme-minimax-design/main/assets/logo-approved.png",
+      "icon": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.4.2/assets/official-logo.png",
       "interface": {
         "displayName": "MiniMax Design",
         "shortDescription": "Generate H3 videos with MiniMax — white-model first/last-frame anchoring",
-        "logo": "https://raw.githubusercontent.com/partme-ai/partme-minimax-design/main/assets/logo-approved.png"
+        "logo": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.4.2/assets/official-logo.png"
       }
     }
   ]
