@@ -38,8 +38,8 @@
     ],
     "brandColor": "#7C5CFF",
     "composerIcon": "./assets/composer-icon.png",
-    "logo": "./assets/logo-approved.png",
-    "logoDark": "./assets/logo-approved.png",
+    "logo": "./assets/official-logo.png",
+    "logoDark": "./assets/official-logo.png",
     "screenshots": []
   }
 }

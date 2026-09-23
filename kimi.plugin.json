@@ -15,7 +15,7 @@
   ],
   "interface": {
     "displayName": "MiniMax Design",
-    "shortDescription": "Generate H3 videos with MiniMax (first/last-frame anchoring)",
+    "shortDescription": "Generate H3 videos with MiniMax — white-model first/last-frame anchoring",
     "longDescription": "Operate MiniMax (海螺) from your coding agent: text2video, image2video with first_frame_image, first/last-frame composition anchored by white-model previs frames, resumable async queries with verified downloads, plus vendored mmx toolkit skills for text, image, speech, and music generation.",
     "developerName": "Full Stack Skills / PartMe.AI",
     "websiteURL": "https://github.com/full-aigc-plugins/minimax-design-plugin"
