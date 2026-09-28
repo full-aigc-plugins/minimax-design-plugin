@@ -1,0 +1,52 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "minimax-design",
+  "version": "0.4.3",
+  "description": "Generate MiniMax H3 videos with env-var auth, first/last-frame FL2VA anchoring, resumable v2 queries, 12 externally managed skills, 2 plugin-local skills, commands, and cross-platform credential setup.",
+  "author": {
+    "name": "Full Stack Skills / PartMe.AI",
+    "url": "https://github.com/partme-ai"
+  },
+  "homepage": "https://github.com/full-aigc-plugins/minimax-design-plugin",
+  "repository": "https://github.com/full-aigc-plugins/minimax-design-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "minimax",
+    "hailuo",
+    "design",
+    "video-generation",
+    "codex"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "MiniMax Design",
+        "shortDescription": "Generate H3 videos with MiniMax — white-model first/last-frame anchoring",
+        "longDescription": "Generate MiniMax Hailuo videos through a deterministic client with environment-variable authentication, first/last-frame composition anchored by white-model previs frames, resumable async queries, and verbatim vendored mmx toolkit skills for text, image, speech, and music generation.",
+        "developerName": "Full Stack Skills / PartMe.AI",
+        "category": "Creativity",
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/full-aigc-plugins/minimax-design-plugin",
+        "privacyPolicyURL": "https://github.com/full-aigc-plugins/minimax-design-plugin/blob/main/PRIVACY.md",
+        "termsOfServiceURL": "https://github.com/full-aigc-plugins/minimax-design-plugin/blob/main/TERMS.md",
+        "defaultPrompt": [
+          "Check my MiniMax credentials and generate a test video",
+          "Turn these white-model first/last frames into a Hailuo video",
+          "Generate background music for my episode with MiniMax"
+        ],
+        "brandColor": "#7C5CFF",
+        "composerIcon": "./assets/composer-icon.png",
+        "logo": "./assets/official-logo.png",
+        "logoDark": "./assets/official-logo.png",
+        "screenshots": []
+      }
+    },
+    "ai.nanoco.nanoclaw": {
+      "agentName": "MiniMax Design"
+    }
+  }
+}
