@@ -22,17 +22,25 @@ def run_hook(path: Path, stdin_payload: str = "{}", env_extra: dict | None = Non
 
 
 class EnvCheckHookTests(unittest.TestCase):
-    def test_always_exits_zero_with_and_without_key(self) -> None:
+    """env_check：插件自完整性检查——完好时静默，缺件时一行告警，永远 exit 0。"""
+
+    def test_intact_tree_is_silent_with_and_without_key(self) -> None:
         hook = ROOT / "hooks" / "env_check.py"
         for env in ({}, {"MINIMAX_API_KEY": "sk-secret-9999"}):
             r = run_hook(hook, env_extra=env)
             self.assertEqual(r.returncode, 0)
-            self.assertIn("MiniMax 设计插件环境", r.stdout)
+            self.assertEqual("", r.stdout)
 
-    def test_does_not_echo_full_key(self) -> None:
+    def test_missing_client_script_warns_once(self) -> None:
+        import shutil, tempfile
         hook = ROOT / "hooks" / "env_check.py"
-        r = run_hook(hook, env_extra={"MINIMAX_API_KEY": "sk-very-secret-7777"})
-        self.assertNotIn("sk-very-secret-7777", r.stdout)
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "hooks" / "env_check.py"
+            copied.parent.mkdir(parents=True)
+            shutil.copy2(hook, copied)
+            r = run_hook(copied, "{}")
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("生成客户端脚本缺失", r.stdout)
 
 
 class IntentHookTests(unittest.TestCase):
