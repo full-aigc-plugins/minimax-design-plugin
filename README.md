@@ -1,5 +1,14 @@
 # MiniMax Design (partme-minimax-design)
 
+## Plugin marketplaces
+
+This plugin belongs to **AIGC content creation**.
+
+| Category | Marketplace | Purpose |
+| --- | --- | --- |
+| Full-stack development | [Full Stack Plugins](https://github.com/partme-ai/full-stack-plugins) | Architecture and UI design, code understanding, quality checks, code review, workflow governance, and server operations |
+| AIGC content creation | [Full AIGC Plugins](https://github.com/partme-ai/full-aigc-plugins) | Image, video, audio, music, 3D, and multimodal content creation |
+
 Generate **MiniMax H3** videos from your coding agent (Codex / ZCode / Kimi) with environment-variable authentication, **first/last-frame composition anchored by Blender white-model previs frames**, resumable async queries with verified downloads, and verbatim vendored **mmx toolkit** skills (text / image / speech / music).
 
 Status: **v0.4.3 — cross-host skill and deterministic-client distribution** (no MCP server yet; the executable client is `scripts/minimax_video.py`).

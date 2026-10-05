@@ -1,5 +1,14 @@
 # MiniMax 设计（partme-minimax-design）
 
+## 插件市场导航
+
+本插件所属分类：**AIGC 内容创作**。
+
+| 分类 | 插件市场入口 | 用途 |
+| --- | --- | --- |
+| 全栈开发 | [Full Stack Plugins](https://github.com/partme-ai/full-stack-plugins) | 架构与 UI 设计、代码理解、质量检查、代码审查、流程治理与服务器运维 |
+| AIGC 内容创作 | [Full AIGC Plugins](https://github.com/partme-ai/full-aigc-plugins) | 图像、视频、音频、音乐、3D 与多模态内容创作 |
+
 在编码智能体（Codex / ZCode / Kimi）里生成 **MiniMax H3** 视频：环境变量鉴权、
 **白模首尾帧锚定**、断点续查、经验证的下载，并逐字内置 **mmx 工具箱**技能
 （文本/图像/语音/音乐）。
