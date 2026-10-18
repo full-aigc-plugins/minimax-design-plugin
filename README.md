@@ -1,4 +1,4 @@
-# MiniMax Design (partme-minimax-design)
+# MiniMax Design
 
 ## Plugin marketplaces
 
@@ -9,129 +9,191 @@ This plugin belongs to **AIGC content creation**.
 | Full-stack development | [Full Stack Plugins](https://github.com/partme-ai/full-stack-plugins) | Architecture and UI design, code understanding, quality checks, code review, workflow governance, and server operations |
 | AIGC content creation | [Full AIGC Plugins](https://github.com/partme-ai/full-aigc-plugins) | Image, video, audio, music, 3D, and multimodal content creation |
 
-Generate **MiniMax H3** videos from your coding agent (Codex / ZCode / Kimi) with environment-variable authentication, **first/last-frame composition anchored by Blender white-model previs frames**, resumable async queries with verified downloads, and verbatim vendored **mmx toolkit** skills (text / image / speech / music).
+![MiniMax Design](assets/official-logo.png)
 
-Status: **v0.4.3 — cross-host skill and deterministic-client distribution** (no MCP server yet; the executable client is `scripts/minimax_video.py`).
+> Generate MiniMax H3 video, music, speech, and images from your coding agent: environment-variable auth, first/last-frame anchoring, and resumable paid tasks that are never submitted twice.
+
+[![Version](https://img.shields.io/badge/release-0.5.1%2Bcodex.20261018-1A73E8)](https://github.com/full-aigc-plugins/minimax-design-plugin/releases)
+[![Hosts](https://img.shields.io/badge/hosts-Codex%20%7C%20ZCode%20%7C%20Kimi-6E56CF)](#installation)
+[![Skills](https://img.shields.io/badge/skills-14-00A67E)](#skills)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
+
+[English](README.md) | [简体中文](README.zh-CN.md) · [Install](#installation) · [Quick start](#quick-start) · [Skills](#skills) · [Troubleshooting](#troubleshooting)
+
+## Positioning
+
+`minimax-design` runs MiniMax generation from a coding agent. It turns a request into H3 video (`t2v`, `i2v`, first/last-frame `FL2VA`, reference-image), music, speech, images, or text through a deterministic Python client or the vendored `mmx` toolkit, and it treats a paid async task as a durable record rather than a fire-and-forget call.
+
+The default creative path is white-model previs anchoring: render first and last frames of each shot in Blender, then let H3 interpolate the motion between them. Prompts are drafted with the vendored `h3-prompt-writing` structures.
+
+| Property | Value |
+| --- | --- |
+| Plugin ID | `minimax-design` |
+| Version | `0.5.1+codex.20261018` |
+| Maturity | Packaged release; no live provider acceptance record is stored in this repository |
+| Runtime | Python 3 (standard library only); `mmx` CLI optional |
+| MCP server | None; the executable client is `scripts/minimax_video.py` |
+
+## Installation
+
+### Prerequisites
+
+- Python 3 on `PATH` for `scripts/minimax_video.py`.
+- A MiniMax API key from [platform.minimax.cn](https://platform.minimax.cn) (China) or [platform.minimax.io](https://platform.minimax.io) (international). The gateway region must match the key.
+- Optional: the `mmx` CLI for toolkit generation, installed with `npm install -g mmx-cli` and signed in through `mmx auth login --api-key`.
+- Optional: Blender white-model previs frames from the companion `blender-previs` skill when you want FL2VA anchoring.
+
+### From the plugin marketplace
+
+```bash
+codex plugin marketplace add partme-ai/full-aigc-plugins
+codex plugin add minimax-design@full-aigc-plugins
+```
+
+### From the repository-local marketplace
+
+```bash
+codex plugin marketplace add full-aigc-plugins/minimax-design-plugin --ref v0.5.1
+codex plugin add minimax-design@partme-ai-minimax-design
+```
+
+Restart the host and open a new task. ZCode loads the plugin through `.zcode-plugin/plugin.json` and auto-discovers `hooks/hooks.json` once; Kimi loads `kimi.plugin.json` with its declared hooks.
+
+### Configure the key
+
+The client resolves the key in this order: process environment, project `.env`, plugin `.env`, then the user credential file. Persist it without editing your shell with:
+
+```bash
+python3 scripts/minimax_video.py auth --api-key sk-...
+python3 scripts/minimax_video.py check
+```
+
+`auth` writes `~/.minimax-design/credentials.json` with mode `600` (override the directory with `MINIMAX_CONFIG_DIR`). `check` reports the key source, gateway, model, and `mmx` status; it prints only the last four characters and never the full key.
 
 ## Quick start
 
-1. Get an API key: [platform.minimaxi.com](https://platform.minimaxi.com) (CN) or [platform.minimax.io](https://platform.minimax.io) (global) → 用户中心 → 接口密钥.
-2. Export it: `export MINIMAX_API_KEY=...` (shell config or project `.env`). Gateway defaults to `api.minimaxi.com`; override with `MINIMAX_BASE` for global accounts.
-3. In your agent, ask the router skill — it always runs the capability preflight first:
-
-```text
-用 MiniMax 生成一段视频：<你的画面描述>
-```
-
-The `minimax-design-use` skill routes the request and surfaces actionable guidance when the key is missing (where to apply, how to export) instead of a raw API error.
-
-## Capabilities
-
-| Mode | Anchoring | Command |
-|---|---|---|
-| text2video | prompt only (ratio required) | `minimax_video.py generate --prompt ... --ratio 16:9 --out ...` |
-| image2video | `first_frame` role | `minimax_video.py generate --first-frame ... --out ...` |
-| first/last-frame (FL2VA) | white-model previs frames | `minimax_video.py generate --first-frame ... --last-frame ... --out ...` |
-| reference-image | subject consistency | `minimax_video.py generate --reference-image ... --out ...` |
-
-- Model: `MiniMax-H3` (480P/768P/2K, 4–15s) or `MiniMax-H3-Max` (fast, 480P/768P, 5–15s); `MINIMAX_MODEL` overrides.
-- v2 API: `POST {host}/v2/video_generation` with a multimodal `content` array
-  (`first_frame` / `last_frame` / `reference_image` roles); OpenAI-style errors;
-  async tasks pollable via `query --task-id` (`list` / `cancel` included).
-- Prompts are drafted through the vendored **`h3-prompt-writing`** skill
-  (T2VA / I2VA / FL2VA / L2VA / Ref2VA structures from MiniMax-AI/MiniMax-H3).
-- Async with resumable queries: a polling timeout prints the `task_id`; resume with `query --task-id` — never resubmit a paid task.
-- Vendored skills (verbatim, content-pinned by SHA-256): the mmx toolkit + music skills from [full-aigc-skills/minimax-skills](https://github.com/full-aigc-skills/minimax-skills) v1.1.0, **plus the 8 style-generator skills adapted from MiniMax-AI/MiniMax-H3 to mmx-cli execution** (brand promo, 3D animation short, MV subtitles, papercraft stop motion, paper collage, minimalist product ad, handdrawn live, co-op game intro).
-
-## Fixed-format account pipeline
-
-This plugin is the generation leg of a fixed-format account pipeline:
-
-```text
-公有领域经典名场面 → 镜头表 → Blender 白模逐镜预演 → MiniMax 首尾帧逐镜生成
-→ detect_shots 实测切点 → video-agent-kit 解说后期 → 发布
-```
-
-See the companion kit for the full episode workflow (shot-table schema, previs conventions, copyright guidance): white-model previs lives in `partme-blender-plugin` (`blender-previs`).
-
-## Three-platform install
-
-| Platform | Manifest | Install |
-|---|---|---|
-| Codex | `.codex-plugin/plugin.json` | add the `partme-ai` marketplace entry / `codex plugin add minimax-design@<market>` |
-| ZCode | `.zcode-plugin/plugin.json` | marketplace entry; standard `hooks/hooks.json` is auto-discovered once |
-| Kimi | `kimi.plugin.json` | flat skills + hooks |
-
-`.agents/plugins/marketplace.json` carries the Codex marketplace entry (`AVAILABLE` installation, `ON_USE` authentication).
-
-## Docs
-
-- [中文说明](README.zh-CN.md)
-- Architecture & conventions: `docs/`
-- [Upstream skills](https://github.com/full-aigc-skills/minimax-skills) — vendored verbatim; content pinned by SHA-256 in `skills.lock.json`
-
-<!-- FULL_STACK_DOC_START -->
-## Project position and runtime boundary
-
-`minimax-design-plugin` is a cross-host plugin for Codex, ZCode, and Kimi. Its current base version is `0.4.3`. Versions, skill counts, and installation sources are derived from the three host manifests, `skills.lock.json`, and immutable GitHub Releases.
-
-```text
-host request -> manifest/command/skill discovery -> local harness or provider client
-             -> artifact + receipt + hash
-             -> or stable failure + recoverable state
-```
-
-### Boundaries
-
-- The plugin owns host adaptation, configuration injection, executable clients, and declared plugin-local skills.
-- External skills are synchronized only from immutable releases; managed copies are not edited directly.
-- Installation, manifest discovery, hook/MCP loading, and successful provider execution are distinct proof levels.
-- Installation does not authorize network use, paid generation, upload, overwrite, deletion, or publishing.
-
-## Host manifests and skill supply chain
-
-| Host | Manifest | Declared version |
-|---|---|---|
-| Codex | `.codex-plugin/plugin.json` | `0.4.3+codex.20260920` |
-| ZCode | `.zcode-plugin/plugin.json` | `0.4.3` |
-| Kimi | `kimi.plugin.json` | `0.4.3` |
-
-| External package | Release ref | Peeled SHA | Skills |
-|---|---|---|---:|
-| `minimax-skills` | `v1.1.1` | `6c27146be428` | 12 |
-
-Plugin-local skills: `minimax-design-use`, `minimax-video-generation`. The external lock contains 12 skills; plugin-local skills do not belong in `skills.lock.json`.
-
-## Verification and release gates
-
 ```bash
-python3 scripts/lint_skills.py
-python3 scripts/validate_distribution.py
-python3 scripts/vendor/skill_vendor.py check --offline
-python3 scripts/vendor/skill_vendor.py check
-python3 -m unittest discover -s tests -p 'test_*.py' -v
+# Capability preflight: auth chain, gateway, model, mmx status
+python3 scripts/minimax_video.py check
+
+# Text to video; a ratio is mandatory for T2VA
+python3 scripts/minimax_video.py generate --prompt "..." --ratio 16:9 --out shot-01.mp4
+
+# First/last-frame FL2VA anchored by white-model previs frames
+python3 scripts/minimax_video.py generate --first-frame first.png --last-frame last.png \
+  --prompt "continuous motion between the two frames" --out shot-01.mp4
+
+# A polling timeout is not a failure: resume the same paid task
+python3 scripts/minimax_video.py query --task-id <task-id>
 ```
 
-Before release, verify aligned base versions, legal Codex build metadata, online/offline skill digests, the plugin-local manifest, tests, immutable marketplace refs, and clean-environment host loading.
+`generate` takes `--duration` and `--resolution`. Model limits: `MiniMax-H3` supports 480P/768P/2K and 4–15s; `MiniMax-H3-Max` supports 480P/768P and 5–15s. `list` and `cancel` operate on existing tasks, and the client never resubmits a paid task automatically.
 
-## Security and credentials
+## What you can build
 
-- Inject credentials only through sensitive host configuration, environment variables, or an external secret store.
-- Never place real tokens in README files, logs, errors, or fixtures.
-- Network calls require timeouts, stable failure classification, and bounded retries. Persist paid async task IDs before polling or recovery.
-- Restrict writes to approved output roots; existing files are not overwritten by default.
+| Workflow | Built-in path | Verifiable output |
+| --- | --- | --- |
+| Text-to-video | `minimax-video-generation`, `generate --ratio` | Downloaded MP4 plus a durable task ID |
+| Image-to-video | `generate --first-frame` | MP4 anchored on the supplied first frame |
+| First/last-frame shot | `generate --first-frame --last-frame` | MP4 interpolated between two previs frames |
+| Reference-consistent subject | `generate --reference-image` | MP4 carrying the reference identity |
+| Styled short from a brief | One of the eight style-generator skills | Shot plan, prompts, generated clips, assembly guidance |
+| Music, speech, images | `mmx` toolkit or `minimax-music-gen` | Audio, image, or text artifacts in the chosen output directory |
+
+## Skills
+
+| Skill | Purpose |
+| --- | --- |
+| `minimax-design-use` | Runs the capability preflight first, then routes the request |
+| `minimax-video-generation` | H3 v2 workflows: `t2v`, `i2v`, `FL2VA`, reference-image |
+| `minimax-multimodal-toolkit` | `mmx` text, image, video, speech, music, and search |
+| `minimax-music-gen` | Songs, instrumentals, and background music |
+| `minimax-music-playlist` | Taste profiling and generated playlists |
+| `h3-prompt-writing` | T2VA, I2VA, FL2VA, L2VA, and Ref2VA prompt structures |
+| `3d-animation-short-generator` | End-to-end stylized 3D animated short |
+| `brand-promo-video-generator` | Brand and product promotional short |
+| `co-op-game-intro-generator` | Two-player co-op menu or opening animation |
+| `handdrawn-live-video-generator` | 15-second hand-drawn animation blended with live action |
+| `minimalist-product-ad-generator` | Minimalist e-commerce product ad |
+| `music-video-subtitle-generator` | Lyric typography and music-video shot plan |
+| `paper-collage-explainer-generator` | Halftone paper-collage explainer |
+| `papercraft-stop-motion-explainer` | Layered papercraft stop-motion explainer |
+
+`minimax-design-use` and `minimax-video-generation` are plugin-local. The other twelve are vendored verbatim from `minimax-skills v1.1.1` and pinned per skill by SHA-256 in `skills.lock.json`; edit neither copy in place.
+
+## Slash commands
+
+| Command | What it does |
+| --- | --- |
+| `/minimax-check` | Preflight auth chain, gateway, model, and `mmx` status |
+| `/minimax-setup` | Cross-platform key setup guidance and `auth` persistence |
+| `/minimax-video` | General H3 video request: `t2v`, `i2v`, or `FL2VA` |
+| `/minimax-t2v` | Text-to-video with a mandatory ratio |
+| `/minimax-i2v` | Image-to-video from one first frame |
+| `/minimax-fl2va` | First/last-frame anchoring; both frames required |
+| `/minimax-ref2v` | Reference-image video generation |
+| `/minimax-episode` | Fixed-format episode pipeline: shot table → per-shot generation → cut detection |
+| `/minimax-image` | Text-to-image with subject reference and batches |
+| `/minimax-speech` | Speech synthesis through the `mmx` toolkit |
+| `/minimax-music` | Song or BGM generation through the MiniMax music API |
+
+## Configuration
+
+| Setting | Where it lives | Notes |
+| --- | --- | --- |
+| API key | `MINIMAX_API_KEY` | Required; environment, `.env`, or the user credential file |
+| Gateway | `MINIMAX_API_HOST` | Defaults to `https://api.minimax.cn`; use `https://api.minimax.io` for international accounts |
+| Model | `MINIMAX_MODEL` | `MiniMax-H3` by default; `MiniMax-H3-Max` for the faster tier |
+| Credential directory | `MINIMAX_CONFIG_DIR` | Defaults to `~/.minimax-design`, file mode `600` |
+| `mmx` credentials | `~/.mmx/credentials.json` | Managed by `mmx auth login`, outside this plugin |
+
+Real tokens never belong in a README, a prompt, a log, or a test fixture. The client prints the key source and the last four characters only, and `check` is advisory: it exits `0` and never blocks the session.
+
+## Architecture and security
+
+```mermaid
+flowchart LR
+    A[Request] --> B[Capability preflight]
+    B --> C{Key and gateway ready?}
+    C -->|no| D[Actionable setup guidance]
+    C -->|yes| E[Prompt drafting]
+    E --> F[H3 v2 client or mmx]
+    F --> G[(Persisted task ID)]
+    G --> H[Resumable query]
+    H --> I[Verified download]
+```
+
+| Component | Owns | Does not own |
+| --- | --- | --- |
+| `scripts/minimax_video.py` | Auth resolution, v2 submit/poll/download, `auth` persistence | Prompt quality |
+| `scripts/vendor/skill_vendor.py` | Immutable skill import and digest checks | Skill content |
+| `hooks/env_check.py` | Advisory session-start environment check | Blocking the session |
+| `skills/` (14) | Routing, prompt structure, and production workflows | Runtime enforcement |
+
+The plugin talks only to the MiniMax endpoints you configure and does not proxy or relay your traffic to the authors. Credentials stay in the host's sensitive configuration, environment variables, or the local credential file; they are not written into artifacts. Network calls use timeouts, and a paid task ID is persisted before polling so a timeout becomes a resumable query rather than a duplicate charge.
 
 ## Troubleshooting
 
-| Symptom | Evidence | Resolution |
-|---|---|---|
-| Plugin not discovered | Host manifest, marketplace pin, install cache | Check plugin ID, version, and release ref |
-| Skill count drift | `skills.lock.json`, `plugin-local-skills.json` | Run vendor checks; do not patch managed copies |
-| Hook or MCP not loaded | Host diagnostics, schema, executable availability | Separate missing config, missing tool, and runtime failure |
-| Request timeout | Task ID, provider error, timeout config | Query the existing task; do not resubmit a paid operation automatically |
-| Marketplace serves old content | Tag, Release, generator output | Verify tag SHA, then regenerate and validate the marketplace |
-<!-- FULL_STACK_DOC_END -->
+| Symptom | Check first | Resolution |
+| --- | --- | --- |
+| `check` reports no key | The resolution chain | Export `MINIMAX_API_KEY`, use project `.env`, or run `auth --api-key` |
+| Authentication fails | Gateway and key region | Match `MINIMAX_API_HOST` to the account region |
+| Video task times out | The persisted task ID | Query the same task; never resubmit a paid job |
+| `mmx` commands are missing | CLI installation | `npm install -g mmx-cli`, then `mmx auth login --api-key` |
+| Model or duration rejected | Model matrix | H3 supports 480P/768P/2K and 4–15s; H3-Max supports 480P/768P and 5–15s |
+| FL2VA has no anchor frames | Previs input | Render first and last frames first, or use `/minimax-i2v` |
+
+## Upgrade
+
+```bash
+codex plugin marketplace upgrade partme-ai-minimax-design
+codex plugin add minimax-design@partme-ai-minimax-design
+```
+
+## Contributing and support
+
+Open functional issues at <https://github.com/full-aigc-plugins/minimax-design-plugin/issues>. Before proposing a change, state the host you verified, whether it alters the credential chain or the model matrix, and include the affected checks.
 
 ## License
 
-Apache-2.0. Upstream skills keep their own licenses (see THIRD_PARTY_NOTICES.md).
+Apache-2.0 — see [LICENSE](LICENSE), [NOTICE](NOTICE), and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Vendored skills keep their own licenses.
