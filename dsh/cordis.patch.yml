@@ -4,4 +4,4 @@
 # for the other hosts.
 - insert:
     - id: minimax-design-plugin
-      name: '@partme-dsh/minimax-design'
+      name: 'minimax-design'
