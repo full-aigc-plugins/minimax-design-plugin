@@ -1,7 +1,7 @@
 {
   "name": "partme-ai-minimax-design",
   "interface": {
-    "displayName": "MiniMax Design"
+    "displayName": "AI Video · MiniMax Design"
   },
   "plugins": [
     {
@@ -9,20 +9,20 @@
       "source": {
         "source": "url",
         "url": "https://github.com/full-aigc-plugins/minimax-design-plugin.git",
-        "ref": "v0.5.1"
+        "ref": "v0.4.3"
       },
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_USE"
       },
       "category": "Creativity",
-      "version": "0.5.1",
-      "description": "Generate MiniMax H3 videos with env-var auth, first/last-frame FL2VA anchoring, resumable v2 queries, 12 externally managed skills, 2 plugin-local skills, commands, and cross-platform credential setup.",
-      "icon": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.5.1/assets/official-logo.png",
+      "version": "0.4.3",
+      "description": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads.",
+      "icon": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.4.3/assets/official-logo.png",
       "interface": {
-        "displayName": "MiniMax Design",
-        "shortDescription": "Generate H3 videos with MiniMax — white-model first/last-frame anchoring",
-        "logo": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.5.1/assets/official-logo.png"
+        "displayName": "AI Video · MiniMax Design",
+        "shortDescription": "H3 text/image-to-video with white-model first/last frames",
+        "logo": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.4.3/assets/official-logo.png"
       }
     }
   ]
