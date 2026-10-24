@@ -1,199 +1,160 @@
-# MiniMax Design
+# MiniMax（AI 视频生成）
 
-## Plugin marketplaces
+> H3 文生/图生视频，白模首尾帧锚定
 
-This plugin belongs to **AIGC content creation**.
+**版本**：0.4.3 · **许可证**：Apache-2.0 · **技能**：14 个
 
-| Category | Marketplace | Purpose |
-| --- | --- | --- |
-| Full-stack development | [Full Stack Plugins](https://github.com/partme-ai/full-stack-plugins) | Architecture and UI design, code understanding, quality checks, code review, workflow governance, and server operations |
-| AIGC content creation | [Full AIGC Plugins](https://github.com/partme-ai/full-aigc-plugins) | Image, video, audio, music, 3D, and multimodal content creation |
+[English](README.en.md) · [安装](#安装) · [快速开始](#快速开始) · [项目结构](#项目结构)
 
-![MiniMax Design](assets/official-logo.png)
+## 项目定位
 
-> Generate MiniMax H3 video, music, speech, and images from your coding agent: environment-variable auth, first/last-frame anchoring, and resumable paid tasks that are never submitted twice.
+MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。
 
-[![Version](https://img.shields.io/badge/release-0.5.1%2Bcodex.20261018-1A73E8)](https://github.com/full-aigc-plugins/minimax-design-plugin/releases)
-[![Hosts](https://img.shields.io/badge/hosts-Codex%20%7C%20ZCode%20%7C%20Kimi-6E56CF)](#installation)
-[![Skills](https://img.shields.io/badge/skills-14-00A67E)](#skills)
-[![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
+本插件属于研发工具线，面向需要在真实仓库或真实服务上完成操作、并保留可核验结果的用户。
 
-[English](README.md) | [简体中文](README.zh-CN.md) · [Install](#installation) · [Quick start](#quick-start) · [Skills](#skills) · [Troubleshooting](#troubleshooting)
+## 一眼看懂
 
-## Positioning
+```text
+仓库 / 服务 / 配置 / 请求
+        │
+        ▼
+MiniMax（AI 视频生成） 技能（检查 → 计划 → 执行 → 核验）
+        │
+        ├── MCP 服务
+        └── 固定 CLI / API
+        │
+        ▼
+变更结果 + 证据 + 回退路径
+```
 
-`minimax-design` runs MiniMax generation from a coding agent. It turns a request into H3 video (`t2v`, `i2v`, first/last-frame `FL2VA`, reference-image), music, speech, images, or text through a deterministic Python client or the vendored `mmx` toolkit, and it treats a paid async task as a durable record rather than a fire-and-forget call.
+## 能力与边界
 
-The default creative path is white-model previs anchoring: render first and last frames of each shot in Blender, then let H3 interpolate the motion between them. Prompts are drafted with the vendored `h3-prompt-writing` structures.
+| 能力 | 说明 | 边界 |
+|---|---|---|
+| 检查 | 读取当前状态与配置 | 不修改未授权目标 |
+| 计划 | 说明将执行的步骤与影响 | 高风险操作需明确确认 |
+| 执行 | 通过 MCP 或固定工具完成操作 | 不绕过权限与审计 |
+| 核验 | 回读结果、日志与状态 | 命令成功不等于目标达成 |
+| 恢复 | 保留回退路径与证据 | 不确定时不自动重放 |
 
-| Property | Value |
-| --- | --- |
-| Plugin ID | `minimax-design` |
-| Version | `0.5.1+codex.20261018` |
-| Maturity | Packaged release; no live provider acceptance record is stored in this repository |
-| Runtime | Python 3 (standard library only); `mmx` CLI optional |
-| MCP server | None; the executable client is `scripts/minimax_video.py` |
+## 架构与核心流程
 
-## Installation
+```text
+宿主 / Agent
+   │  调用技能
+   ▼
+skills/minimax-design-*  ──►  MCP 服务 / 固定 CLI
+                              │
+                              ▼
+                     目标系统 / 仓库
+                              │
+                              ▼
+                     回读、核验、报告
+```
 
-### Prerequisites
+原则：
 
-- Python 3 on `PATH` for `scripts/minimax_video.py`.
-- A MiniMax API key from [platform.minimax.cn](https://platform.minimax.cn) (China) or [platform.minimax.io](https://platform.minimax.io) (international). The gateway region must match the key.
-- Optional: the `mmx` CLI for toolkit generation, installed with `npm install -g mmx-cli` and signed in through `mmx auth login --api-key`.
-- Optional: Blender white-model previs frames from the companion `blender-previs` skill when you want FL2VA anchoring.
+1. 先只读检查，再计划，再执行。
+2. 明确目标、范围、凭据和回退方式。
+3. 执行后回读真实现场，不只看退出码。
+4. 不确定时停止并报告，不自动重试有副作用的操作。
 
-### From the plugin marketplace
+## 兼容性
+
+| 项目 | 状态 |
+|---|---|
+| 宿主 | 支持 MCP 的宿主 |
+| 运行时 | 以插件清单与实际安装环境为准 |
+| 平台 | 以发行说明与目标系统为准 |
+
+## 安装
 
 ```bash
 codex plugin marketplace add partme-ai/full-aigc-plugins
 codex plugin add minimax-design@full-aigc-plugins
 ```
 
-### From the repository-local marketplace
+安装后重启宿主，先做只读检查。
+
+## 快速开始
+
+1. 确认目标、环境、权限和影响范围。
+2. 只读检查现状，记录基线。
+3. 执行一次有界变更。
+4. 回读目标状态、日志和关键指标。
+5. 保存证据；失败时按回退路径恢复。
+
+## 配置
+
+按插件文档配置 MCP 地址、认证方式和目标环境。不要把令牌、密码或私钥写入仓库。
+
+## 扩展契约
+
+新增技能时应使用 `minimax-design-` 前缀，声明触发条件、权限边界和失败处理，通过 MCP 或固定工具执行，并在变更后回读核验。
+
+## 重试、幂等与恢复
+
+- 失败后先检查目标当前状态。
+- 不自动重放已产生副作用的操作。
+- 重试前确认幂等条件与回退路径。
+- 保留命令、日志和结果证据。
+
+## 数据与状态
+
+- 凭据只从安全配置读取。
+- 变更前后的状态分别记录。
+- 不把生产数据复制到不受控目录。
+
+## 安全
+
+- 遵循最小权限原则。
+- 高风险操作必须明确确认。
+- 发现凭据泄露先轮换，再清理痕迹。
+- 不绕过审计、权限或分支保护。
+
+## 可观测性与运行
+
+记录命令、目标、时间、结果和关键指标；交付前回读一次真实状态。
+
+## 开发与验证
 
 ```bash
-codex plugin marketplace add full-aigc-plugins/minimax-design-plugin --ref v0.5.1
-codex plugin add minimax-design@partme-ai-minimax-design
+node --test
+python3 -m pytest
 ```
 
-Restart the host and open a new task. ZCode loads the plugin through `.zcode-plugin/plugin.json` and auto-discovers `hooks/hooks.json` once; Kimi loads `kimi.plugin.json` with its declared hooks.
+## 打包与发布
 
-### Configure the key
+版本与清单、市场、tag 一致；发布后重新安装并做一次只读检查。
 
-The client resolves the key in this order: process environment, project `.env`, plugin `.env`, then the user credential file. Persist it without editing your shell with:
+## 升级与迁移
 
-```bash
-python3 scripts/minimax_video.py auth --api-key sk-...
-python3 scripts/minimax_video.py check
+升级前备份配置与状态；确认兼容性；迁移后重新核验连接和权限。
+
+## 故障排查
+
+| 现象 | 检查 |
+|---|---|
+| 连接失败 | 地址、网络、认证 |
+| 权限不足 | 账号角色与令牌范围 |
+| 操作无效果 | 回读目标状态与日志 |
+| 结果不确定 | 停止重试，先核对现场 |
+
+## 项目结构
+
+```text
+minimax-design-plugin/
+├── .zcode-plugin/      # ZCode 清单
+├── .codex-plugin/      # Codex 清单
+├── skills/             # 14 个技能
+├── docs/               # 架构与验证记录
+└── assets/             # 图标与静态资源
 ```
 
-`auth` writes `~/.minimax-design/credentials.json` with mode `600` (override the directory with `MINIMAX_CONFIG_DIR`). `check` reports the key source, gateway, model, and `mmx` status; it prints only the last four characters and never the full key.
+## 贡献与支持
 
-## Quick start
+提交问题时附上插件版本、宿主、目标环境、命令、日志和预期结果。不要附凭据或生产数据。
 
-```bash
-# Capability preflight: auth chain, gateway, model, mmx status
-python3 scripts/minimax_video.py check
+## 许可证
 
-# Text to video; a ratio is mandatory for T2VA
-python3 scripts/minimax_video.py generate --prompt "..." --ratio 16:9 --out shot-01.mp4
-
-# First/last-frame FL2VA anchored by white-model previs frames
-python3 scripts/minimax_video.py generate --first-frame first.png --last-frame last.png \
-  --prompt "continuous motion between the two frames" --out shot-01.mp4
-
-# A polling timeout is not a failure: resume the same paid task
-python3 scripts/minimax_video.py query --task-id <task-id>
-```
-
-`generate` takes `--duration` and `--resolution`. Model limits: `MiniMax-H3` supports 480P/768P/2K and 4–15s; `MiniMax-H3-Max` supports 480P/768P and 5–15s. `list` and `cancel` operate on existing tasks, and the client never resubmits a paid task automatically.
-
-## What you can build
-
-| Workflow | Built-in path | Verifiable output |
-| --- | --- | --- |
-| Text-to-video | `minimax-video-generation`, `generate --ratio` | Downloaded MP4 plus a durable task ID |
-| Image-to-video | `generate --first-frame` | MP4 anchored on the supplied first frame |
-| First/last-frame shot | `generate --first-frame --last-frame` | MP4 interpolated between two previs frames |
-| Reference-consistent subject | `generate --reference-image` | MP4 carrying the reference identity |
-| Styled short from a brief | One of the eight style-generator skills | Shot plan, prompts, generated clips, assembly guidance |
-| Music, speech, images | `mmx` toolkit or `minimax-music-gen` | Audio, image, or text artifacts in the chosen output directory |
-
-## Skills
-
-| Skill | Purpose |
-| --- | --- |
-| `minimax-design-use` | Runs the capability preflight first, then routes the request |
-| `minimax-video-generation` | H3 v2 workflows: `t2v`, `i2v`, `FL2VA`, reference-image |
-| `minimax-multimodal-toolkit` | `mmx` text, image, video, speech, music, and search |
-| `minimax-music-gen` | Songs, instrumentals, and background music |
-| `minimax-music-playlist` | Taste profiling and generated playlists |
-| `h3-prompt-writing` | T2VA, I2VA, FL2VA, L2VA, and Ref2VA prompt structures |
-| `3d-animation-short-generator` | End-to-end stylized 3D animated short |
-| `brand-promo-video-generator` | Brand and product promotional short |
-| `co-op-game-intro-generator` | Two-player co-op menu or opening animation |
-| `handdrawn-live-video-generator` | 15-second hand-drawn animation blended with live action |
-| `minimalist-product-ad-generator` | Minimalist e-commerce product ad |
-| `music-video-subtitle-generator` | Lyric typography and music-video shot plan |
-| `paper-collage-explainer-generator` | Halftone paper-collage explainer |
-| `papercraft-stop-motion-explainer` | Layered papercraft stop-motion explainer |
-
-`minimax-design-use` and `minimax-video-generation` are plugin-local. The other twelve are vendored verbatim from `minimax-skills v1.1.1` and pinned per skill by SHA-256 in `skills.lock.json`; edit neither copy in place.
-
-## Slash commands
-
-| Command | What it does |
-| --- | --- |
-| `/minimax-check` | Preflight auth chain, gateway, model, and `mmx` status |
-| `/minimax-setup` | Cross-platform key setup guidance and `auth` persistence |
-| `/minimax-video` | General H3 video request: `t2v`, `i2v`, or `FL2VA` |
-| `/minimax-t2v` | Text-to-video with a mandatory ratio |
-| `/minimax-i2v` | Image-to-video from one first frame |
-| `/minimax-fl2va` | First/last-frame anchoring; both frames required |
-| `/minimax-ref2v` | Reference-image video generation |
-| `/minimax-episode` | Fixed-format episode pipeline: shot table → per-shot generation → cut detection |
-| `/minimax-image` | Text-to-image with subject reference and batches |
-| `/minimax-speech` | Speech synthesis through the `mmx` toolkit |
-| `/minimax-music` | Song or BGM generation through the MiniMax music API |
-
-## Configuration
-
-| Setting | Where it lives | Notes |
-| --- | --- | --- |
-| API key | `MINIMAX_API_KEY` | Required; environment, `.env`, or the user credential file |
-| Gateway | `MINIMAX_API_HOST` | Defaults to `https://api.minimax.cn`; use `https://api.minimax.io` for international accounts |
-| Model | `MINIMAX_MODEL` | `MiniMax-H3` by default; `MiniMax-H3-Max` for the faster tier |
-| Credential directory | `MINIMAX_CONFIG_DIR` | Defaults to `~/.minimax-design`, file mode `600` |
-| `mmx` credentials | `~/.mmx/credentials.json` | Managed by `mmx auth login`, outside this plugin |
-
-Real tokens never belong in a README, a prompt, a log, or a test fixture. The client prints the key source and the last four characters only, and `check` is advisory: it exits `0` and never blocks the session.
-
-## Architecture and security
-
-```mermaid
-flowchart LR
-    A[Request] --> B[Capability preflight]
-    B --> C{Key and gateway ready?}
-    C -->|no| D[Actionable setup guidance]
-    C -->|yes| E[Prompt drafting]
-    E --> F[H3 v2 client or mmx]
-    F --> G[(Persisted task ID)]
-    G --> H[Resumable query]
-    H --> I[Verified download]
-```
-
-| Component | Owns | Does not own |
-| --- | --- | --- |
-| `scripts/minimax_video.py` | Auth resolution, v2 submit/poll/download, `auth` persistence | Prompt quality |
-| `scripts/vendor/skill_vendor.py` | Immutable skill import and digest checks | Skill content |
-| `hooks/env_check.py` | Advisory session-start environment check | Blocking the session |
-| `skills/` (14) | Routing, prompt structure, and production workflows | Runtime enforcement |
-
-The plugin talks only to the MiniMax endpoints you configure and does not proxy or relay your traffic to the authors. Credentials stay in the host's sensitive configuration, environment variables, or the local credential file; they are not written into artifacts. Network calls use timeouts, and a paid task ID is persisted before polling so a timeout becomes a resumable query rather than a duplicate charge.
-
-## Troubleshooting
-
-| Symptom | Check first | Resolution |
-| --- | --- | --- |
-| `check` reports no key | The resolution chain | Export `MINIMAX_API_KEY`, use project `.env`, or run `auth --api-key` |
-| Authentication fails | Gateway and key region | Match `MINIMAX_API_HOST` to the account region |
-| Video task times out | The persisted task ID | Query the same task; never resubmit a paid job |
-| `mmx` commands are missing | CLI installation | `npm install -g mmx-cli`, then `mmx auth login --api-key` |
-| Model or duration rejected | Model matrix | H3 supports 480P/768P/2K and 4–15s; H3-Max supports 480P/768P and 5–15s |
-| FL2VA has no anchor frames | Previs input | Render first and last frames first, or use `/minimax-i2v` |
-
-## Upgrade
-
-```bash
-codex plugin marketplace upgrade partme-ai-minimax-design
-codex plugin add minimax-design@partme-ai-minimax-design
-```
-
-## Contributing and support
-
-Open functional issues at <https://github.com/full-aigc-plugins/minimax-design-plugin/issues>. Before proposing a change, state the host you verified, whether it alters the credential chain or the model matrix, and include the affected checks.
-
-## License
-
-Apache-2.0 — see [LICENSE](LICENSE), [NOTICE](NOTICE), and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Vendored skills keep their own licenses.
+Apache-2.0，见 [LICENSE](LICENSE)。
