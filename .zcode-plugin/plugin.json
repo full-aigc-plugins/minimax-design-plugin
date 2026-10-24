@@ -1,8 +1,8 @@
 {
   "name": "minimax-design",
-  "displayName": "AI Video · MiniMax Design",
+  "displayName": "MiniMax Design · AI Video",
   "displayName_i18n": {
-    "en": "AI Video · MiniMax Design"
+    "en": "MiniMax Design · AI Video"
   },
   "version": "0.4.3",
   "description": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads.",

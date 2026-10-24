@@ -1,7 +1,7 @@
 {
   "name": "partme-ai-minimax-design",
   "interface": {
-    "displayName": "AI Video · MiniMax Design"
+    "displayName": "MiniMax Design · AI Video"
   },
   "plugins": [
     {
@@ -20,7 +20,7 @@
       "description": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads.",
       "icon": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.4.3/assets/official-logo.png",
       "interface": {
-        "displayName": "AI Video · MiniMax Design",
+        "displayName": "MiniMax Design · AI Video",
         "shortDescription": "H3 text/image-to-video with white-model first/last frames",
         "logo": "https://cdn.jsdelivr.net/gh/full-aigc-plugins/minimax-design-plugin@v0.4.3/assets/official-logo.png"
       }
