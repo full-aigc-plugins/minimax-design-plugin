@@ -1,7 +1,7 @@
 {
   "name": "minimax-design",
   "version": "0.4.3",
-  "description": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads.",
+  "description": "MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。",
   "author": {
     "name": "Full Stack Skills / PartMe.AI",
     "url": "https://github.com/partme-ai"
@@ -42,5 +42,12 @@
     "logoDark": "./assets/official-logo.png",
     "screenshots": [],
     "composerIconDark": "./assets/official-logo.png"
+  },
+  "displayName": "MiniMax（AI 视频生成）",
+  "displayName_i18n": {
+    "zh-CN": "MiniMax（AI 视频生成）"
+  },
+  "description_i18n": {
+    "zh-CN": "MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。"
   }
 }

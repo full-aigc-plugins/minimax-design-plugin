@@ -1,13 +1,15 @@
 {
   "name": "minimax-design",
-  "displayName": "MiniMax Design · AI Video",
+  "displayName": "MiniMax（AI 视频生成）",
   "displayName_i18n": {
-    "en": "MiniMax Design · AI Video"
+    "en": "MiniMax Design · AI Video",
+    "zh-CN": "MiniMax（AI 视频生成）"
   },
   "version": "0.4.3",
-  "description": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads.",
+  "description": "MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。",
   "description_i18n": {
-    "en": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads."
+    "en": "MiniMax H3 video generation with environment-variable auth, first/last-frame anchoring, resumable queries and verified downloads.",
+    "zh-CN": "MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。"
   },
   "author": {
     "name": "Full Stack Skills / PartMe.AI",
