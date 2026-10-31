@@ -48,13 +48,15 @@
     },
     "ai.nanoco.nanoclaw": {
       "agentName": "MiniMax Design"
+    },
+    "ai.partme": {
+      "displayName": "MiniMax（AI 视频生成）",
+      "displayName_i18n": {
+        "zh-CN": "MiniMax（AI 视频生成）"
+      },
+      "description_i18n": {
+        "zh-CN": "MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。"
+      }
     }
-  },
-  "displayName": "MiniMax（AI 视频生成）",
-  "displayName_i18n": {
-    "zh-CN": "MiniMax（AI 视频生成）"
-  },
-  "description_i18n": {
-    "zh-CN": "MiniMax H3 视频生成，环境变量鉴权、白模首尾帧锚定、可恢复查询与校验下载。"
   }
 }
